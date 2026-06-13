@@ -11,12 +11,26 @@ export default function HomePage() {
           แพลตฟอร์มช่วยครอบครัวดูแลผู้สูงวัย — บันทึก แจ้งเตือน และสรุปข้อมูลการดูแล
         </p>
       </div>
-      <Link
-        href="/prototype"
-        className="touch-standard inline-flex items-center justify-center rounded-xl bg-primary px-8 py-3 text-base font-semibold text-primary-foreground transition-colors hover:opacity-90"
-      >
-        เปิดต้นแบบ Phase 1
-      </Link>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Link
+          href="/signup"
+          className="touch-standard inline-flex items-center justify-center rounded-xl bg-primary px-8 py-3 text-base font-semibold text-primary-foreground transition-colors hover:opacity-90"
+        >
+          เริ่มใช้งาน
+        </Link>
+        <Link
+          href="/login"
+          className="touch-standard inline-flex items-center justify-center rounded-xl border-2 border-border px-8 py-3 text-base font-semibold transition-colors hover:bg-muted"
+        >
+          เข้าสู่ระบบ
+        </Link>
+        <Link
+          href="/prototype"
+          className="touch-standard inline-flex items-center justify-center rounded-xl px-8 py-3 text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ต้นแบบ Phase 1
+        </Link>
+      </div>
     </main>
   );
 }

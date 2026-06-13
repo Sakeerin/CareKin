@@ -937,6 +937,10 @@ AI ห้ามตอบแบบ:
 
 ## Phase 1: Prototype
 
+> **สถานะ:** ✅ Implemented (code + docs) — 2026-06-12  
+> **Build:** `npm run build` passes · Prototype at `/prototype`  
+> **ยังไม่เสร็จ:** UX testing กับผู้ใช้ 5–8 คน, revised MVP scope (หลังทดสอบ), ไฟล์ Figma จริง (มี `docs/ux_wireframe_spec.md` สำหรับ handoff แล้ว)
+
 ระยะเวลา: 2-3 สัปดาห์
 
 ### Goals
@@ -947,27 +951,49 @@ AI ห้ามตอบแบบ:
 
 ### Tasks
 
-1. ทำ Figma prototype
-2. ทำ elder mode screen
-3. ทำ family dashboard screen
-4. ทำ caregiver check-in screen
-5. ทำ weekly report mockup
-6. ทดสอบกับผู้ใช้ 5-8 คน
-7. ปรับภาษา ปุ่ม และ flow
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | ทำ Figma prototype | ✅ Spec ready | `docs/ux_wireframe_spec.md` + clickable prototype at `/prototype` |
+| 2 | ทำ elder mode screen | ✅ Done | `/prototype/elder` |
+| 3 | ทำ family dashboard screen | ✅ Done | `/prototype/family` |
+| 4 | ทำ caregiver check-in screen | ✅ Done | `/prototype/caregiver` |
+| 5 | ทำ weekly report mockup | ✅ Done | `/prototype/report` + `/prototype/line` |
+| 6 | ทดสอบกับผู้ใช้ 5-8 คน | ⏳ Pending | Template: `docs/ux_testing_report_template.md` |
+| 7 | ปรับภาษา ปุ่ม และ flow | ⏳ Pending | หลัง UX testing |
 
 ### Deliverables
 
-- Figma prototype
-- UX testing report
-- revised MVP scope
+| Deliverable | Status | Location |
+|---|---|---|
+| Figma prototype | ✅ Spec + clickable | `docs/ux_wireframe_spec.md`, `/prototype` |
+| UX testing report | ⏳ Template only | `docs/ux_testing_report_template.md` |
+| revised MVP scope | ⏳ Pending | หลัง UX testing |
+
+### Implementation checklist (code)
+
+- [x] Next.js + Tailwind v4 + Noto Sans Thai
+- [x] Prototype hub + 10-step onboarding wizard
+- [x] Elder mode (tasks, check-in, success)
+- [x] Caregiver check-in (RHF + Zod, 60s timer)
+- [x] Family dashboard (status, missed, activity, alerts, trend)
+- [x] Weekly report mock + AI summary block
+- [x] LINE reminder preview
+- [x] Mock data + localStorage prototype store
+- [x] UX wireframe spec + testing template
 
 ### Exit criteria
 
-- ผู้ใช้ทำ onboarding ได้ภายใน 10 นาที
-- caregiver บันทึก check-in ได้ภายใน 60 วินาที
-- dashboard เข้าใจได้โดยไม่ต้องอธิบายยาว
+| Criterion | Build status | Validated with users |
+|---|---|---|
+| ผู้ใช้ทำ onboarding ได้ภายใน 10 นาที | ✅ Built (10 steps, skippable) | ⏳ Pending |
+| caregiver บันทึก check-in ได้ภายใน 60 วินาที | ✅ Built (timer + pre-filled form) | ⏳ Pending |
+| dashboard เข้าใจได้โดยไม่ต้องอธิบายยาว | ✅ Built | ⏳ Pending |
 
 ## Phase 2: MVP foundation
+
+> **สถานะ:** ✅ Implemented (code + schema + CI) — 2026-06-12  
+> **Setup:** Copy `.env.example` → `.env.local`, run migration in Supabase SQL Editor  
+> **Docs:** `README.md`, `docs/rls_test_guide.md`
 
 ระยะเวลา: 3-4 สัปดาห์
 
@@ -977,31 +1003,37 @@ AI ห้ามตอบแบบ:
 
 ### Tasks
 
-1. ตั้ง repo และ CI/CD
-2. สร้าง Next.js app
-3. ตั้ง Supabase project
-4. ออกแบบ DB schema
-5. เปิด RLS policies
-6. ทำ auth flow
-7. ทำ workspace/member roles
-8. ทำ elder profile CRUD
-9. ทำ emergency contacts
-10. ทำ audit log เบื้องต้น
-11. ทำ settings page
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | ตั้ง repo และ CI/CD | ✅ Done | `.github/workflows/ci.yml` |
+| 2 | สร้าง Next.js app | ✅ Done | Extended from Phase 1 |
+| 3 | ตั้ง Supabase project | ✅ Config ready | `.env.example`, apply migration manually |
+| 4 | ออกแบบ DB schema | ✅ Done | `supabase/migrations/20260612000000_phase2_foundation.sql` |
+| 5 | เปิด RLS policies | ✅ Done | All Phase 2 tables + helper functions |
+| 6 | ทำ auth flow | ✅ Done | `/login`, `/signup`, middleware session |
+| 7 | ทำ workspace/member roles | ✅ Done | 6 roles, invites, `/members` |
+| 8 | ทำ elder profile CRUD | ✅ Done | `/elders`, consent on create |
+| 9 | ทำ emergency contacts | ✅ Done | On elder detail page |
+| 10 | ทำ audit log เบื้องต้น | ✅ Done | `audit_logs` + dashboard/settings |
+| 11 | ทำ settings page | ✅ Done | `/settings` |
 
 ### Deliverables
 
-- running staging app
-- schema migration
-- auth and RBAC
-- elder profile module
+| Deliverable | Status | Location |
+|---|---|---|
+| running staging app | ✅ Ready | Deploy to Vercel + Supabase |
+| schema migration | ✅ Done | `supabase/migrations/` |
+| auth and RBAC | ✅ Done | middleware + RLS + role checks |
+| elder profile module | ✅ Done | `/elders/*` |
 
 ### Exit criteria
 
-- user สมัครและสร้าง workspace ได้
-- เพิ่มผู้สูงวัยได้
-- invite family/caregiver ได้
-- RLS test ผ่าน
+| Criterion | Status |
+|---|---|
+| user สมัครและสร้าง workspace ได้ | ✅ Built — `/signup` → `/workspace/new` |
+| เพิ่มผู้สูงวัยได้ | ✅ Built — `/elders/new` |
+| invite family/caregiver ได้ | ✅ Built — `/members` + `/invite/accept` |
+| RLS test ผ่าน | ⏳ Manual — see `docs/rls_test_guide.md` |
 
 ## Phase 3: Care tasks and reminders
 
