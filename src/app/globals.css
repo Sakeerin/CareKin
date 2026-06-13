@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: oklch(99% 0.005 90);
+  --color-foreground: oklch(20% 0.02 260);
+
+  --color-primary: oklch(45% 0.12 250);
+  --color-primary-foreground: oklch(99% 0.005 90);
+
+  --color-secondary: oklch(96% 0.01 90);
+  --color-secondary-foreground: oklch(25% 0.02 260);
+
+  --color-muted: oklch(95% 0.01 90);
+  --color-muted-foreground: oklch(45% 0.02 260);
+
+  --color-accent: oklch(94% 0.02 250);
+  --color-accent-foreground: oklch(25% 0.02 260);
+
+  --color-success: oklch(55% 0.15 145);
+  --color-success-foreground: oklch(99% 0.005 90);
+
+  --color-warning: oklch(75% 0.15 75);
+  --color-warning-foreground: oklch(25% 0.02 260);
+
+  --color-destructive: oklch(55% 0.2 25);
+  --color-destructive-foreground: oklch(99% 0.005 90);
+
+  --color-border: oklch(88% 0.01 90);
+  --color-ring: oklch(45% 0.12 250);
+
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(20% 0.02 260);
+
+  --color-line-green: oklch(65% 0.15 145);
+  --color-line-bg: oklch(92% 0.02 250);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --font-size-elder: 1.25rem;
+  --font-size-elder-lg: 1.375rem;
+
+  --animate-fade-in: fade-in 0.2s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  .text-elder {
+    font-size: var(--font-size-elder);
+  }
+
+  .text-elder-lg {
+    font-size: var(--font-size-elder-lg);
+  }
+
+  .touch-elder {
+    min-height: 3.5rem;
+    min-width: 3.5rem;
+  }
+
+  .touch-standard {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  .input-field {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+  }
+
+  .input-field:focus {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
