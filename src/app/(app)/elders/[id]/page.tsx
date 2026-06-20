@@ -62,6 +62,9 @@ export default async function ElderDetailPage({
           <Link href={`/elders/${id}/vitals`}>
             <Button variant="outline" size="sm">Vitals</Button>
           </Link>
+          <Link href={`/elders/${id}/reports`}>
+            <Button variant="outline" size="sm">Reports</Button>
+          </Link>
           <Link href={`/elders/${id}/medications`}>
             <Button variant="outline" size="sm">ยา</Button>
           </Link>

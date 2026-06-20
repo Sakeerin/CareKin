@@ -1127,6 +1127,10 @@ AI ห้ามตอบแบบ:
 
 ## Phase 5: Report and AI summary
 
+> **สถานะ:** ✅ Implemented (code + schema) — 2026-06-20  
+> **Setup:** Apply `supabase/migrations/20260615000000_phase5_reports_ai_summary.sql` after Phase 4  
+> **Docs:** `README.md` (Phase 5 section)
+
 ระยะเวลา: 3-4 สัปดาห์
 
 ### Goals
@@ -1135,30 +1139,36 @@ AI ห้ามตอบแบบ:
 
 ### Tasks
 
-1. ทำ report period selector
-2. aggregate medication adherence
-3. aggregate check-ins
-4. aggregate vitals
-5. aggregate alerts
-6. ทำ AI summary service
-7. ทำ structured output validation
-8. ทำ human review screen
-9. ทำ PDF export
-10. ทำ share link with expiry
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | ทำ report period selector | ✅ Done | `/elders/[id]/reports` |
+| 2 | aggregate medication adherence | ✅ Done | `task_events` medication aggregation |
+| 3 | aggregate check-ins | ✅ Done | `daily_checkins` aggregation |
+| 4 | aggregate vitals | ✅ Done | `vital_logs` latest + averages |
+| 5 | aggregate alerts | ✅ Done | `care_alerts` in report period |
+| 6 | ทำ AI summary service | ✅ Done | deterministic structured draft service |
+| 7 | ทำ structured output validation | ✅ Done | Zod `aiReportSchema` |
+| 8 | ทำ human review screen | ✅ Done | `/elders/[id]/reports/[reportId]/review` |
+| 9 | ทำ PDF export | ✅ Done | print-friendly `/export` route |
+| 10 | ทำ share link with expiry | ✅ Done | `report_shares`, `/report/share/[token]` |
 
 ### Deliverables
 
-- weekly report
-- doctor visit report
-- AI draft summary
-- PDF export
+| Deliverable | Status | Location |
+|---|---|---|
+| weekly report | ✅ Done | report type `weekly` |
+| doctor visit report | ✅ Done | report type `doctor_visit` |
+| AI draft summary | ✅ Done | `src/lib/services/ai-summary.ts` |
+| PDF export | ✅ Done | print/save PDF export route |
 
 ### Exit criteria
 
-- สร้าง report 7/30 วันได้
-- AI output ไม่มี diagnosis/treatment
-- user review/edit ก่อน export ได้
-- PDF อ่านง่าย
+| Criterion | Status |
+|---|---|
+| สร้าง report 7/30 วันได้ | ✅ Built — supports 7/14/30 days |
+| AI output ไม่มี diagnosis/treatment | ✅ Built — deterministic guardrails + disclaimer |
+| user review/edit ก่อน export ได้ | ✅ Built — export disabled until reviewed |
+| PDF อ่านง่าย | ✅ Built — print-friendly report document |
 
 ## Phase 6: Pilot launch
 

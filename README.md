@@ -29,6 +29,7 @@ cp .env.example .env.local
 supabase/migrations/20260612000000_phase2_foundation.sql
 supabase/migrations/20260613000000_phase3_care_tasks.sql
 supabase/migrations/20260614000000_phase4_checkin_vitals.sql
+supabase/migrations/20260615000000_phase5_reports_ai_summary.sql
 ```
 
 4. Run the dev server:
@@ -58,6 +59,10 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/elders/[id]/check-in/elder` | Elder-friendly large-button check-in |
 | `/elders/[id]/vitals` | Vital signs logging + trend chart |
 | `/elders/[id]/thresholds` | Alert threshold settings |
+| `/elders/[id]/reports` | Report generation + report history |
+| `/elders/[id]/reports/[reportId]/review` | Human review/edit before export |
+| `/elders/[id]/reports/[reportId]/export` | Print / Save PDF view |
+| `/report/share/[token]` | Public expiring shared report |
 | `/elders/[id]/medications` | Medication CRUD + schedules |
 | `/elders/[id]/routines` | Routine care tasks |
 | `/members` | Invite & manage members |
@@ -132,3 +137,18 @@ Phase 4 adds daily health capture and alert rules on top of Phase 3's notificati
 - Basic trend charts on the vitals page
 
 The existing `/api/cron/reminders` endpoint also checks for missed daily check-ins after 20:00 Asia/Bangkok and creates family alerts.
+
+## Phase 5 — Reports and AI summary
+
+Phase 5 adds report snapshots for family review and doctor visits.
+
+### Phase 5 deliverables
+
+- 7/14/30 day report generation
+- Aggregates for medication adherence, check-ins, vitals, and alerts
+- Structured AI draft summary with safety disclaimer and no diagnosis/treatment claims
+- Human review/edit screen before export
+- Print-friendly PDF export route
+- Expiring public share links
+
+The current AI draft is deterministic and validated with Zod, so it works without an external AI provider. A future provider can replace `src/lib/services/ai-summary.ts` while preserving the same structured output schema.

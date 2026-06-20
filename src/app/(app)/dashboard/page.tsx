@@ -193,6 +193,11 @@ export default async function DashboardPage() {
                       Vitals
                     </Button>
                   </Link>
+                  <Link href={`/elders/${elder.id}/reports`}>
+                    <Button size="sm" variant="outline">
+                      Reports
+                    </Button>
+                  </Link>
                   <Link href={`/elders/${elder.id}/medications`}>
                     <Button size="sm" variant="outline">
                       ยา
