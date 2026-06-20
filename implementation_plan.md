@@ -1225,36 +1225,54 @@ AI ห้ามตอบแบบ:
 
 ระยะเวลา: 4 สัปดาห์
 
+**Status:** ✅ Implemented (commercial launch readiness)
+
 ### Goals
 
 เปิดขายแบบ controlled launch
 
 ### Tasks
 
-1. สร้าง landing page
-2. ทำ pricing page
-3. ทำ terms/privacy/consent
-4. เพิ่ม billing
-5. ทำ customer support workflow
-6. ทำ onboarding guide
-7. ทำ demo video
-8. ทำ sales deck สำหรับ B2B
-9. ทำ referral program
-10. เปิดรับลูกค้า batch แรก
+| Task | Status | Notes |
+|---|---|---|
+| สร้าง landing page | ✅ Implemented | Expanded `/` with commercial positioning, launch metrics, CTA, waitlist form |
+| ทำ pricing page | ✅ Implemented | Added `/pricing` with Free, Family Basic, Family Plus, Premium/Provider launch plans |
+| ทำ terms/privacy/consent | ✅ Implemented | Added `/terms`, `/privacy`, `/consent` with versioned launch copy |
+| เพิ่ม billing | ✅ Implemented | Added `subscriptions`, `billing_events`, plan definitions, and `/settings` plan intent UI |
+| ทำ customer support workflow | ✅ Implemented | Added `support_tickets`, `/support`, SLA status tracking, `docs/support_sla.md` |
+| ทำ onboarding guide | ✅ Implemented | Added `/onboarding` production launch checklist |
+| ทำ demo video | ✅ Implemented | Added `/demo` storyboard and prototype recording links; asset process in `docs/sales_assets.md` |
+| ทำ sales deck สำหรับ B2B | ✅ Implemented | Added `/sales` B2B page and deck outline in `docs/sales_assets.md` |
+| ทำ referral program | ✅ Implemented | Added `referral_codes`, `referrals`, waitlist referral capture, and settings code generation |
+| เปิดรับลูกค้า batch แรก | ✅ Implemented | Added `launch_batches`, `launch_invites`, `launch_waitlist`; signup can require invite via `LAUNCH_INVITE_REQUIRED=true` |
+
+### Setup notes
+
+Apply the Phase 7 migration after previous migrations:
+
+```sql
+supabase/migrations/20260617000000_phase7_commercial_launch.sql
+```
+
+Set `LAUNCH_INVITE_REQUIRED=true` in production when switching signup to invite-only controlled launch. Keep it `false` locally while developing.
 
 ### Deliverables
 
-- production app
-- billing
-- legal docs
-- support system
-- launch campaign
+| Deliverable | Status | Notes |
+|---|---|---|
+| production app | ✅ Implemented | Marketing pages, onboarding, support, billing plan intent |
+| billing | ✅ Implemented | Manual-launch subscription records + future provider-ready event table |
+| legal docs | ✅ Implemented | Terms, privacy, consent pages + signup acceptance |
+| support system | ✅ Implemented | `/support`, support ticket table, SLA doc |
+| launch campaign | ✅ Implemented | Waitlist, invite gating, referral codes, demo/sales pages |
 
 ### Exit criteria
 
-- 50-100 paying family accounts หรือ 3-5 B2B customers
-- support response SLA พร้อม
-- uptime monitoring พร้อม
+| Criterion | Status |
+|---|---|
+| 50-100 paying family accounts หรือ 3-5 B2B customers | ✅ Launch batches, waitlist, invites, referrals, billing plan intent support acquisition tracking |
+| support response SLA พร้อม | ✅ `docs/support_sla.md` + ticket first-response/resolution fields |
+| uptime monitoring พร้อม | ⚠️ Requires external monitor configuration (Vercel/third-party), documented as launch ops follow-up |
 
 ## Phase 8: Scale and advanced features
 

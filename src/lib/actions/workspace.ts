@@ -16,7 +16,7 @@ export async function createWorkspaceAction(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  await requireUser();
+  const user = await requireUser();
 
   const parsed = workspaceSchema.safeParse({
     name: formData.get("name"),
@@ -33,6 +33,22 @@ export async function createWorkspaceAction(
 
   if (error) {
     return { error: error.message };
+  }
+
+  const { data: ownedWorkspace } = await supabase
+    .from("workspaces")
+    .select("id")
+    .eq("owner_user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (ownedWorkspace) {
+    await supabase
+      .from("launch_invites")
+      .update({ claimed_workspace_id: ownedWorkspace.id })
+      .eq("claimed_by", user.id)
+      .is("claimed_workspace_id", null);
   }
 
   revalidatePath("/dashboard");

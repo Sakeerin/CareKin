@@ -42,6 +42,25 @@ export function SignupForm() {
           <FormField label="ชื่อที่แสดง" name="displayName" required />
           <FormField label="อีเมล" name="email" type="email" required />
           <FormField label="รหัสผ่าน" name="password" type="password" required />
+          <FormField label="Invite code (ถ้ามี)" name="inviteCode" />
+          <label className="flex items-start gap-3 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              name="acceptedTerms"
+              required
+              className="mt-1 h-4 w-4 rounded border-border"
+            />
+            <span>
+              ฉันยอมรับ{" "}
+              <Link href="/terms" className="font-medium text-primary hover:underline">
+                Terms
+              </Link>{" "}
+              และ{" "}
+              <Link href="/privacy" className="font-medium text-primary hover:underline">
+                Privacy Policy
+              </Link>
+            </span>
+          </label>
           <Button type="submit" className="w-full">
             สมัครสมาชิก
           </Button>

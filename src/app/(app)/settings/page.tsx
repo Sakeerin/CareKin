@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormAction, FormField } from "@/components/app/form-action";
+import { FormAction, FormField, FormSelect } from "@/components/app/form-action";
 import { Button } from "@/components/ui/button";
 import {
   requireUser,
@@ -10,6 +10,13 @@ import { createClient } from "@/lib/supabase/server";
 import { updateProfileAction, updateWorkspaceAction } from "@/lib/actions/workspace";
 import { getAuditLogs } from "@/lib/actions/audit";
 import { WORKSPACE_ROLE_LABELS } from "@/lib/types/database";
+import {
+  createReferralCodeAction,
+  getReferralCodes,
+  getWorkspaceSubscription,
+  selectBillingPlanAction,
+} from "@/lib/actions/commercial";
+import { BILLING_PLANS, getPlan } from "@/lib/plans";
 
 export const metadata = { title: "ตั้งค่า" };
 
@@ -24,8 +31,13 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .single();
 
-  const auditLogs = await getAuditLogs(workspace.id, 20);
+  const [auditLogs, subscription, referralCodes] = await Promise.all([
+    getAuditLogs(workspace.id, 20),
+    getWorkspaceSubscription(),
+    getReferralCodes(),
+  ]);
   const canEditWorkspace = canManageWorkspace(membership.role);
+  const currentPlan = getPlan(subscription?.plan ?? workspace.plan);
 
   return (
     <div className="space-y-6">
@@ -69,6 +81,65 @@ export default async function SettingsPage() {
               />
               <Button type="submit">บันทึก workspace</Button>
             </FormAction>
+          </CardContent>
+        </Card>
+      )}
+
+      {canEditWorkspace && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Billing / Launch plan</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg bg-muted p-4 text-sm">
+              <p className="font-medium">แผนปัจจุบัน: {currentPlan.name}</p>
+              <p className="text-muted-foreground">
+                {currentPlan.priceText} · สถานะ billing: {subscription?.status ?? "not started"}
+              </p>
+            </div>
+            <FormAction action={selectBillingPlanAction} className="space-y-4">
+              <FormSelect
+                label="เลือกแผนสำหรับ launch"
+                name="plan"
+                defaultValue={currentPlan.id}
+                options={BILLING_PLANS.map((plan) => ({
+                  value: plan.id,
+                  label: `${plan.name} — ${plan.priceText}`,
+                }))}
+              />
+              <p className="text-sm text-muted-foreground">
+                Phase 7 บันทึก plan intent และ subscription record สำหรับ manual invoice/Stripe integration ภายหลัง
+              </p>
+              <Button type="submit">บันทึกแผน</Button>
+            </FormAction>
+          </CardContent>
+        </Card>
+      )}
+
+      {canEditWorkspace && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Referral program</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormAction action={createReferralCodeAction} className="space-y-4">
+              <FormField label="Referral code (เว้นว่างเพื่อสุ่ม)" name="code" />
+              <Button type="submit">สร้าง referral code</Button>
+            </FormAction>
+            <div className="space-y-2">
+              {referralCodes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">ยังไม่มี referral code</p>
+              ) : (
+                referralCodes.map((referral) => (
+                  <div key={referral.id} className="rounded-lg border border-border px-4 py-3 text-sm">
+                    <p className="font-semibold">{referral.code}</p>
+                    <p className="text-muted-foreground">
+                      แชร์ลิงก์: /?ref={referral.code} · {referral.active ? "active" : "inactive"}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       )}

@@ -6,10 +6,11 @@ import { WORKSPACE_ROLE_LABELS } from "@/lib/types/database";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/onboarding", label: "Onboarding" },
   { href: "/tasks", label: "งานวันนี้" },
   { href: "/elders", label: "ผู้สูงวัย" },
   { href: "/notifications", label: "แจ้งเตือน" },
-  { href: "/feedback", label: "Feedback" },
+  { href: "/support", label: "Support" },
   { href: "/members", label: "สมาชิก" },
   { href: "/settings", label: "ตั้งค่า" },
 ];

@@ -31,6 +31,7 @@ supabase/migrations/20260613000000_phase3_care_tasks.sql
 supabase/migrations/20260614000000_phase4_checkin_vitals.sql
 supabase/migrations/20260615000000_phase5_reports_ai_summary.sql
 supabase/migrations/20260616000000_phase6_pilot_launch.sql
+supabase/migrations/20260617000000_phase7_commercial_launch.sql
 ```
 
 4. Run the dev server:
@@ -47,8 +48,16 @@ Open [http://localhost:3000](http://localhost:3000)
 |---|---|
 | `/signup` | Create account |
 | `/login` | Sign in |
+| `/pricing` | Commercial launch pricing |
+| `/terms` | Terms of Service |
+| `/privacy` | Privacy Policy |
+| `/consent` | Health data consent summary |
+| `/help` | Public help center |
+| `/demo` | Demo video storyboard and prototype links |
+| `/sales` | B2B sales page |
 | `/workspace/new` | Create family workspace |
 | `/dashboard` | Main dashboard — today's tasks & alerts |
+| `/onboarding` | Launch onboarding checklist |
 | `/tasks` | Today's care tasks |
 | `/tasks/[id]` | Confirm done / missed |
 | `/notifications` | Notification log |
@@ -67,6 +76,7 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/elders/[id]/medications` | Medication CRUD + schedules |
 | `/elders/[id]/routines` | Routine care tasks |
 | `/feedback` | Pilot bug / UX feedback form |
+| `/support` | Launch support tickets and SLA workflow |
 | `/ops/pilot` | Pilot operations dashboard for admins |
 | `/members` | Invite & manage members |
 | `/settings` | Profile & workspace settings |
@@ -171,3 +181,24 @@ Phase 6 adds operational tooling for a 30-day pilot cohort.
 - Pilot playbook and interview templates in `docs/`
 
 Use `/ops/pilot` for admin pilot tracking and `/feedback` for pilot users to report issues.
+
+## Phase 7 — Commercial launch
+
+Phase 7 adds a controlled commercial launch layer on top of the pilot product.
+
+### Additional environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `LAUNCH_INVITE_REQUIRED` | Optional | Set to `true` in production to require invite codes during signup |
+
+### Phase 7 deliverables
+
+- Public landing page, pricing page, legal pages, help center, demo storyboard, and B2B sales page
+- Launch waitlist, invite codes, launch batches, referral codes, support tickets, subscription records, and billing events
+- In-app support workflow at `/support`
+- Billing plan intent and referral code management in `/settings`
+- Launch onboarding guide at `/onboarding`
+- Commercial launch, support SLA, and sales asset docs in `docs/`
+
+See `docs/commercial_launch_plan.md`, `docs/support_sla.md`, and `docs/sales_assets.md` for operating details.

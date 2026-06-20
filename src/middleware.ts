@@ -22,6 +22,8 @@ export const config = {
     "/notifications/:path*",
     "/alerts/:path*",
     "/feedback/:path*",
+    "/support/:path*",
+    "/onboarding/:path*",
     "/ops/:path*",
     "/invite/:path*",
     "/login",

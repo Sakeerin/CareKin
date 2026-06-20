@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema, signupSchema } from "@/lib/schemas/auth";
+import {
+  claimLaunchInvite,
+  validateLaunchInviteForSignup,
+} from "@/lib/actions/commercial";
 
 export type ActionResult = { error?: string; success?: boolean };
 
@@ -38,23 +42,41 @@ export async function signupAction(
     email: formData.get("email"),
     password: formData.get("password"),
     displayName: formData.get("displayName"),
+    inviteCode: formData.get("inviteCode"),
+    acceptedTerms: formData.get("acceptedTerms") === "on",
   });
 
   if (!parsed.success) {
     return { error: parsed.error.errors[0]?.message ?? "ข้อมูลไม่ถูกต้อง" };
   }
 
+  const invite = await validateLaunchInviteForSignup(
+    parsed.data.inviteCode || null,
+    parsed.data.email,
+  );
+  if (!invite.ok) {
+    return { error: invite.error };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { display_name: parsed.data.displayName },
+      data: {
+        display_name: parsed.data.displayName,
+        accepted_terms_version: "terms-v1",
+        accepted_privacy_version: "privacy-v1",
+      },
     },
   });
 
   if (error) {
     return { error: error.message };
+  }
+
+  if (data.user) {
+    await claimLaunchInvite(invite.inviteId, data.user.id);
   }
 
   redirect("/workspace/new");
