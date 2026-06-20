@@ -38,6 +38,8 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/settings") ||
     pathname.startsWith("/members") ||
     pathname.startsWith("/workspace") ||
+    pathname.startsWith("/tasks") ||
+    pathname.startsWith("/notifications") ||
     pathname.startsWith("/invite");
 
   if (!user && isAppRoute) {

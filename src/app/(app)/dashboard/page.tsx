@@ -1,16 +1,29 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StatusBadge, AlertBadge } from "@/components/ui/badge";
 import { requireWorkspace, canManageElders } from "@/lib/auth/session";
 import { getElders } from "@/lib/actions/elder";
-import { getAuditLogs } from "@/lib/actions/audit";
+import {
+  getTodayTaskEvents,
+  getTodayStatusSummary,
+  getOpenAlerts,
+  syncTodayTasksForWorkspace,
+} from "@/lib/actions/task-events";
 
 export const metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
   const { workspace, membership } = await requireWorkspace();
+  await syncTodayTasksForWorkspace();
+
   const elders = await getElders(workspace.id);
-  const auditLogs = await getAuditLogs(workspace.id, 10);
+  const todayEvents = await getTodayTaskEvents(workspace.id);
+  const summary = await getTodayStatusSummary(workspace.id);
+  const alerts = await getOpenAlerts(workspace.id);
+
+  const pendingEvents = todayEvents.filter((e) => e.status === "pending");
+  const missedEvents = todayEvents.filter((e) => e.status === "missed");
 
   return (
     <div className="space-y-6">
@@ -19,40 +32,107 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">{workspace.name}</p>
         </div>
-        {canManageElders(membership.role) && (
-          <Link href="/elders/new">
-            <Button>เพิ่มผู้สูงวัย</Button>
+        <div className="flex gap-2">
+          <Link href="/tasks">
+            <Button variant="outline">งานวันนี้</Button>
           </Link>
-        )}
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>ผู้สูงวัย</CardDescription>
-            <CardTitle className="text-3xl">{elders.length}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>บทบาทของคุณ</CardDescription>
-            <CardTitle className="text-lg capitalize">{membership.role.replace("_", " ")}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>แผน</CardDescription>
-            <CardTitle className="text-lg">{workspace.plan}</CardTitle>
-          </CardHeader>
-        </Card>
+          {canManageElders(membership.role) && (
+            <Link href="/elders/new">
+              <Button>เพิ่มผู้สูงวัย</Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold">ผู้สูงวัยใน workspace</h2>
+        <h2 className="mb-3 text-lg font-semibold">สถานะวันนี้</h2>
+        <div className="grid gap-3 sm:grid-cols-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>งานทั้งหมด</CardDescription>
+              <CardTitle className="text-3xl">{summary.total}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>ทำแล้ว</CardDescription>
+              <CardTitle className="text-3xl text-success">{summary.completed}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>รอดำเนินการ</CardDescription>
+              <CardTitle className="text-3xl text-warning-foreground">{summary.pending}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>พลาด</CardDescription>
+              <CardTitle className="text-3xl text-destructive">{summary.missed}</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+      </section>
+
+      {alerts.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">การแจ้งเตือน</h2>
+            <Link href="/notifications" className="text-sm text-primary hover:underline">
+              ดูทั้งหมด
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {alerts.slice(0, 3).map((alert) => (
+              <Card key={alert.id} className="border-warning/30">
+                <CardContent className="flex items-center gap-3 py-4">
+                  <AlertBadge level="family" />
+                  <p className="text-sm">{alert.message}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {(pendingEvents.length > 0 || missedEvents.length > 0) && (
+        <section>
+          <h2 className="mb-3 text-lg font-semibold">งานที่ต้องดูแล</h2>
+          <div className="space-y-2">
+            {[...pendingEvents, ...missedEvents].slice(0, 8).map((event) => (
+              <Link key={event.id} href={`/tasks/${event.id}`}>
+                <Card className="transition-shadow hover:shadow-md">
+                  <CardContent className="flex items-center justify-between py-4">
+                    <div>
+                      <p className="font-medium">{event.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {(event.elders as { nickname?: string; full_name: string })?.nickname ??
+                          (event.elders as { full_name: string })?.full_name}
+                        {" · "}
+                        {new Date(event.due_at).toLocaleTimeString("th-TH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          timeZone: "Asia/Bangkok",
+                        })}
+                      </p>
+                    </div>
+                    <StatusBadge
+                      status={event.status === "missed" ? "missed" : "pending"}
+                    />
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold">ผู้สูงวัย</h2>
         {elders.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center text-muted-foreground">
-              <p>ยังไม่มีผู้สูงวัย — เพิ่มคนแรกเพื่อเริ่มดูแล</p>
+              <p>ยังไม่มีผู้สูงวัย — เพิ่มคนแรกแล้วตั้งยา/routine</p>
               {canManageElders(membership.role) && (
                 <Link href="/elders/new" className="mt-4 inline-block">
                   <Button>เพิ่มผู้สูงวัย</Button>
@@ -63,46 +143,30 @@ export default async function DashboardPage() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {elders.map((elder) => (
-              <Link key={elder.id} href={`/elders/${elder.id}`}>
-                <Card className="transition-shadow hover:shadow-md">
-                  <CardHeader>
+              <Card key={elder.id}>
+                <CardHeader>
+                  <Link href={`/elders/${elder.id}`} className="hover:underline">
                     <CardTitle>{elder.nickname ?? elder.full_name}</CardTitle>
-                    <CardDescription>{elder.full_name}</CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
+                  </Link>
+                  <CardDescription>{elder.full_name}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex gap-2">
+                  <Link href={`/elders/${elder.id}/medications`}>
+                    <Button size="sm" variant="outline">
+                      ยา
+                    </Button>
+                  </Link>
+                  <Link href={`/elders/${elder.id}/routines`}>
+                    <Button size="sm" variant="outline">
+                      Routine
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
       </section>
-
-      <section>
-        <h2 className="mb-3 text-lg font-semibold">กิจกรรมล่าสุด (Audit log)</h2>
-        <Card>
-          <CardContent className="divide-y divide-border p-0">
-            {auditLogs.length === 0 ? (
-              <p className="p-5 text-sm text-muted-foreground">ยังไม่มีกิจกรรม</p>
-            ) : (
-              auditLogs.map((log) => (
-                <div key={log.id} className="px-5 py-3">
-                  <p className="text-sm font-medium">{log.action}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(log.created_at).toLocaleString("th-TH")}
-                    {log.profiles?.display_name && ` · ${log.profiles.display_name}`}
-                  </p>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-      </section>
-
-      <p className="text-sm text-muted-foreground">
-        ต้นแบบ Phase 1 ยังใช้ได้ที่{" "}
-        <Link href="/prototype" className="text-primary hover:underline">
-          /prototype
-        </Link>
-      </p>
     </div>
   );
 }

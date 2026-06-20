@@ -65,6 +65,8 @@ export interface Elder {
   doctor_contact: string | null;
   care_instructions: string | null;
   notes: string | null;
+  line_user_id?: string | null;
+  reminder_channel?: "web" | "line" | "both";
   created_by: string | null;
   created_at: string;
   updated_at: string;

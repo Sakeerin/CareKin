@@ -11,6 +11,9 @@ import {
   addEmergencyContactAction,
   deleteEmergencyContactAction,
 } from "@/lib/actions/elder";
+import { updateElderReminderSettingsAction } from "@/lib/actions/care-tasks";
+import { FormSelect } from "@/components/app/form-action";
+import { REMINDER_CHANNELS } from "@/lib/types/care-tasks";
 import { requireWorkspace, canManageElders } from "@/lib/auth/session";
 
 export async function generateMetadata({
@@ -52,7 +55,26 @@ export default async function ElderDetailPage({
           </h1>
           <p className="text-muted-foreground">{elder.full_name}</p>
         </div>
+        <div className="flex gap-2">
+          <Link href={`/elders/${id}/medications`}>
+            <Button variant="outline" size="sm">ยา</Button>
+          </Link>
+          <Link href={`/elders/${id}/routines`}>
+            <Button variant="outline" size="sm">Routine</Button>
+          </Link>
+        </div>
       </div>
+
+      {canEdit && (
+        <Card>
+          <CardHeader>
+            <CardTitle>การแจ้งเตือน</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ReminderSettings elderId={id} elder={elder} />
+          </CardContent>
+        </Card>
+      )}
 
       {canEdit ? (
         <Card>
@@ -130,6 +152,35 @@ export default async function ElderDetailPage({
         </form>
       )}
     </div>
+  );
+}
+
+function ReminderSettings({
+  elderId,
+  elder,
+}: {
+  elderId: string;
+  elder: { line_user_id?: string | null; reminder_channel?: string };
+}) {
+  const bound = updateElderReminderSettingsAction.bind(null, elderId);
+  return (
+    <FormAction action={bound} className="space-y-4">
+      <FormSelect
+        label="ช่องทางแจ้งเตือน"
+        name="reminderChannel"
+        defaultValue={elder.reminder_channel ?? "web"}
+        options={REMINDER_CHANNELS.map((c) => ({ value: c.value, label: c.label }))}
+      />
+      <FormField
+        label="LINE User ID"
+        name="lineUserId"
+        defaultValue={elder.line_user_id ?? ""}
+        placeholder="Uxxxxxxxx"
+      />
+      <Button type="submit" size="sm">
+        บันทึกการแจ้งเตือน
+      </Button>
+    </FormAction>
   );
 }
 

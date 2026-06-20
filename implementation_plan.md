@@ -1037,6 +1037,10 @@ AI ห้ามตอบแบบ:
 
 ## Phase 3: Care tasks and reminders
 
+> **สถานะ:** ✅ Implemented (code + schema) — 2026-06-12  
+> **Setup:** Apply `supabase/migrations/20260613000000_phase3_care_tasks.sql`, set `CRON_SECRET` + optional LINE vars  
+> **Docs:** `README.md` (Phase 3 section)
+
 ระยะเวลา: 3-4 สัปดาห์
 
 ### Goals
@@ -1045,30 +1049,36 @@ AI ห้ามตอบแบบ:
 
 ### Tasks
 
-1. ทำ medication CRUD
-2. ทำ medication schedule
-3. ทำ routine care task
-4. สร้าง task event generator
-5. ทำ reminder queue
-6. เชื่อม LINE Messaging API
-7. ทำ confirm done/missed
-8. ทำ missed escalation
-9. ทำ notification log
-10. ทำ dashboard status วันนี้
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | ทำ medication CRUD | ✅ Done | `/elders/[id]/medications` |
+| 2 | ทำ medication schedule | ✅ Done | `medication_schedules` + daily times |
+| 3 | ทำ routine care task | ✅ Done | `/elders/[id]/routines` |
+| 4 | สร้าง task event generator | ✅ Done | `src/lib/services/task-events.ts` |
+| 5 | ทำ reminder queue | ✅ Done | `reminder_queue` + cron processor |
+| 6 | เชื่อม LINE Messaging API | ✅ Done | push + webhook stub (`src/lib/line/messaging.ts`) |
+| 7 | ทำ confirm done/missed | ✅ Done | `/tasks/[id]`, server actions |
+| 8 | ทำ missed escalation | ✅ Done | `care_alerts` + family admin notifications |
+| 9 | ทำ notification log | ✅ Done | `/notifications` |
+| 10 | ทำ dashboard status วันนี้ | ✅ Done | `/dashboard` + `/tasks` |
 
 ### Deliverables
 
-- medication reminder
-- routine reminder
-- LINE notification
-- missed alert
+| Deliverable | Status | Location |
+|---|---|---|
+| medication reminder | ✅ Done | medications + schedules → task events |
+| routine reminder | ✅ Done | care_tasks → task events |
+| LINE notification | ✅ Done | optional — set LINE env vars |
+| missed alert | ✅ Done | cron + `care_alerts` |
 
 ### Exit criteria
 
-- reminder ถูกส่งตามเวลา
-- user confirm task ได้
-- missed task แจ้ง family admin ได้
-- dashboard update real-time หรือ near real-time
+| Criterion | Status |
+|---|---|
+| reminder ถูกส่งตามเวลา | ✅ Built — `/api/cron/reminders` (schedule via Vercel Cron or external) |
+| user confirm task ได้ | ✅ Built — `/tasks/[id]` |
+| missed task แจ้ง family admin ได้ | ✅ Built — escalation in reminder processor |
+| dashboard update real-time หรือ near real-time | ✅ Built — sync on page load + cron |
 
 ## Phase 4: Check-in, vitals, and alerts
 
