@@ -9,9 +9,12 @@ const navItems = [
   { href: "/tasks", label: "งานวันนี้" },
   { href: "/elders", label: "ผู้สูงวัย" },
   { href: "/notifications", label: "แจ้งเตือน" },
+  { href: "/feedback", label: "Feedback" },
   { href: "/members", label: "สมาชิก" },
   { href: "/settings", label: "ตั้งค่า" },
 ];
+
+const pilotRoles: WorkspaceRole[] = ["owner", "family_admin"];
 
 export function AppShell({
   children,
@@ -31,7 +34,12 @@ export function AppShell({
               CareKin
             </Link>
             <nav className="hidden gap-1 sm:flex">
-              {navItems.map((item) => (
+              {[
+                ...navItems,
+                ...(userRole && pilotRoles.includes(userRole)
+                  ? [{ href: "/ops/pilot", label: "Pilot" }]
+                  : []),
+              ].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -57,7 +65,12 @@ export function AppShell({
           </div>
         </div>
         <nav className="flex gap-1 overflow-x-auto border-t border-border px-4 py-2 sm:hidden">
-          {navItems.map((item) => (
+          {[
+            ...navItems,
+            ...(userRole && pilotRoles.includes(userRole)
+              ? [{ href: "/ops/pilot", label: "Pilot" }]
+              : []),
+          ].map((item) => (
             <Link
               key={item.href}
               href={item.href}

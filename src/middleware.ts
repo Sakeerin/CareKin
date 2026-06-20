@@ -21,6 +21,8 @@ export const config = {
     "/tasks/:path*",
     "/notifications/:path*",
     "/alerts/:path*",
+    "/feedback/:path*",
+    "/ops/:path*",
     "/invite/:path*",
     "/login",
     "/signup",

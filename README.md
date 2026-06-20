@@ -30,6 +30,7 @@ supabase/migrations/20260612000000_phase2_foundation.sql
 supabase/migrations/20260613000000_phase3_care_tasks.sql
 supabase/migrations/20260614000000_phase4_checkin_vitals.sql
 supabase/migrations/20260615000000_phase5_reports_ai_summary.sql
+supabase/migrations/20260616000000_phase6_pilot_launch.sql
 ```
 
 4. Run the dev server:
@@ -65,6 +66,8 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/report/share/[token]` | Public expiring shared report |
 | `/elders/[id]/medications` | Medication CRUD + schedules |
 | `/elders/[id]/routines` | Routine care tasks |
+| `/feedback` | Pilot bug / UX feedback form |
+| `/ops/pilot` | Pilot operations dashboard for admins |
 | `/members` | Invite & manage members |
 | `/settings` | Profile & workspace settings |
 | `/prototype` | Phase 1 UX prototype (mock data) |
@@ -152,3 +155,19 @@ Phase 5 adds report snapshots for family review and doctor visits.
 - Expiring public share links
 
 The current AI draft is deterministic and validated with Zod, so it works without an external AI provider. A future provider can replace `src/lib/services/ai-summary.ts` while preserving the same structured output schema.
+
+## Phase 6 — Pilot launch
+
+Phase 6 adds operational tooling for a 30-day pilot cohort.
+
+### Phase 6 deliverables
+
+- Pilot cohort and setup tracking
+- Baseline workflow capture
+- Weekly interview notes and NPS/retention signal
+- Pilot bug/UX feedback queue
+- Reminder completion, active admin, report usage, and pricing-evidence metrics
+- Pricing signal capture
+- Pilot playbook and interview templates in `docs/`
+
+Use `/ops/pilot` for admin pilot tracking and `/feedback` for pilot users to report issues.

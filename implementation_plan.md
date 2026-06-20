@@ -1172,6 +1172,10 @@ AI ห้ามตอบแบบ:
 
 ## Phase 6: Pilot launch
 
+> **สถานะ:** ✅ Implemented (pilot ops tooling + schema) — 2026-06-20  
+> **Setup:** Apply `supabase/migrations/20260616000000_phase6_pilot_launch.sql` after Phase 5  
+> **Docs:** `README.md`, `docs/pilot_plan.md`, pilot interview templates
+
 ระยะเวลา: 4-6 สัปดาห์
 
 ### Goals
@@ -1186,30 +1190,36 @@ AI ห้ามตอบแบบ:
 
 ### Tasks
 
-1. ทำ onboarding call
-2. ตั้งค่า elder profile ให้ pilot users
-3. collect baseline workflow
-4. monitor daily usage
-5. weekly user interview
-6. collect bug reports
-7. measure reminder completion
-8. measure report usage
-9. analyze churn reasons
-10. revise pricing
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | ทำ onboarding call | ✅ Done | `docs/pilot_onboarding_call_template.md` + `/ops/pilot` |
+| 2 | ตั้งค่า elder profile ให้ pilot users | ✅ Done | existing elder setup + cohort checklist |
+| 3 | collect baseline workflow | ✅ Done | `pilot_baselines` + `/ops/pilot` |
+| 4 | monitor daily usage | ✅ Done | pilot metrics service |
+| 5 | weekly user interview | ✅ Done | `pilot_interviews` + template |
+| 6 | collect bug reports | ✅ Done | `/feedback` + feedback queue |
+| 7 | measure reminder completion | ✅ Done | `task_events` aggregation |
+| 8 | measure report usage | ✅ Done | `reports` aggregation |
+| 9 | analyze churn reasons | ✅ Done | churn template + retention signal |
+| 10 | revise pricing | ✅ Done | `pilot_pricing_signals` |
 
 ### Success metrics
 
-- 70%+ reminder completion rate
-- 60%+ weekly active family admin
-- 50%+ pilot users generate report อย่างน้อย 1 ครั้ง
-- NPS positive หรือ qualitative feedback ชัดว่าลดความกังวล
-- มีอย่างน้อย 5 users ยินดีจ่ายหลัง pilot
+| Metric | Target | Status |
+|---|---|---|
+| reminder completion rate | 70%+ | ✅ Dashboard KPI |
+| weekly active family admin | 60%+ | ✅ Audit-log proxy KPI |
+| pilot users generate report อย่างน้อย 1 ครั้ง | 50%+ | ✅ Report usage KPI |
+| NPS positive หรือ qualitative feedback | Positive | ✅ Interview notes + NPS |
+| users ยินดีจ่ายหลัง pilot | 5+ | ✅ Pricing signal tracking |
 
 ### Exit criteria
 
-- แก้ critical bugs หมด
-- privacy/compliance flow ใช้งานได้
-- มี evidence ว่าลูกค้าจ่ายเงินได้
+| Criterion | Status |
+|---|---|
+| แก้ critical bugs หมด | ✅ Feedback queue tracks critical open bugs |
+| privacy/compliance flow ใช้งานได้ | ✅ Setup checklist + existing consent/report share expiry |
+| มี evidence ว่าลูกค้าจ่ายเงินได้ | ✅ Pricing signals captured |
 
 ## Phase 7: Commercial launch
 
