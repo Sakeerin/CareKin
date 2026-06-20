@@ -20,6 +20,7 @@ export const config = {
     "/workspace/:path*",
     "/tasks/:path*",
     "/notifications/:path*",
+    "/alerts/:path*",
     "/invite/:path*",
     "/login",
     "/signup",

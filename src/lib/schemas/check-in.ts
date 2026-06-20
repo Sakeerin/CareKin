@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+const optionalNumber = z
+  .union([z.coerce.number(), z.literal(""), z.null()])
+  .optional()
+  .transform((value) => (value === "" || value === null ? undefined : value));
+
+const formBoolean = z
+  .union([z.boolean(), z.enum(["true", "false", "on", ""])])
+  .transform((value) => value === true || value === "true" || value === "on");
+
 export const checkInSchema = z.object({
   elderId: z.string().min(1),
   mood: z.enum(["good", "okay", "bad"]),
@@ -15,6 +24,55 @@ export const checkInSchema = z.object({
 });
 
 export type CheckInFormData = z.infer<typeof checkInSchema>;
+
+export const dailyCheckInActionSchema = z.object({
+  mood: z.enum(["good", "okay", "bad"]),
+  hasSymptoms: formBoolean,
+  hadFall: formBoolean,
+  appetiteNormal: formBoolean,
+  sleep: z.enum(["good", "okay", "bad"]),
+  note: z.string().max(500).optional().or(z.literal("")),
+  systolic: optionalNumber,
+  diastolic: optionalNumber,
+  pulse: optionalNumber,
+  bloodSugar: optionalNumber,
+});
+
+export const vitalLogSchema = z.object({
+  measuredAt: z.string().optional().or(z.literal("")),
+  systolic: optionalNumber,
+  diastolic: optionalNumber,
+  pulse: optionalNumber,
+  bloodSugar: optionalNumber,
+  temperature: optionalNumber,
+  spo2: optionalNumber,
+  weight: optionalNumber,
+  note: z.string().max(500).optional().or(z.literal("")),
+});
+
+export const alertRuleSchema = z
+  .object({
+    metric: z.enum([
+      "systolic",
+      "diastolic",
+      "pulse",
+      "blood_sugar",
+      "temperature",
+      "spo2",
+      "weight",
+    ]),
+    minValue: optionalNumber,
+    maxValue: optionalNumber,
+    severity: z.enum(["info", "family", "urgent"]),
+  })
+  .refine((data) => data.minValue !== undefined || data.maxValue !== undefined, {
+    message: "กรุณาระบุค่าต่ำสุดหรือค่าสูงสุด",
+    path: ["minValue"],
+  });
+
+export type DailyCheckInActionData = z.infer<typeof dailyCheckInActionSchema>;
+export type VitalLogData = z.infer<typeof vitalLogSchema>;
+export type AlertRuleData = z.infer<typeof alertRuleSchema>;
 
 export const onboardingSchema = z.object({
   workspaceName: z.string().min(1, "กรุณากรอกชื่อครอบครัว"),

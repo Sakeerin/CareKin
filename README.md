@@ -28,6 +28,7 @@ cp .env.example .env.local
 ```
 supabase/migrations/20260612000000_phase2_foundation.sql
 supabase/migrations/20260613000000_phase3_care_tasks.sql
+supabase/migrations/20260614000000_phase4_checkin_vitals.sql
 ```
 
 4. Run the dev server:
@@ -49,9 +50,14 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/tasks` | Today's care tasks |
 | `/tasks/[id]` | Confirm done / missed |
 | `/notifications` | Notification log |
+| `/alerts/[id]` | Alert detail + acknowledge |
 | `/elders` | Elder profiles list |
 | `/elders/new` | Add elder |
 | `/elders/[id]` | Elder detail, emergency contacts, reminder settings |
+| `/elders/[id]/check-in` | Caregiver daily check-in form |
+| `/elders/[id]/check-in/elder` | Elder-friendly large-button check-in |
+| `/elders/[id]/vitals` | Vital signs logging + trend chart |
+| `/elders/[id]/thresholds` | Alert threshold settings |
 | `/elders/[id]/medications` | Medication CRUD + schedules |
 | `/elders/[id]/routines` | Routine care tasks |
 | `/members` | Invite & manage members |
@@ -110,3 +116,19 @@ Set `LINE_CHANNEL_SECRET` and `LINE_CHANNEL_ACCESS_TOKEN`. On each elder's profi
 - Missed escalation + care alerts
 - Notification log
 - Dashboard today status
+
+## Phase 4 — Check-in, vitals, and alerts
+
+Phase 4 adds daily health capture and alert rules on top of Phase 3's notification stack.
+
+### Phase 4 deliverables
+
+- Daily check-in with caregiver form and elder-friendly mode
+- Vitals logging for blood pressure, pulse, blood sugar, temperature, SpO2, and weight
+- Default + custom threshold rules
+- Alert engine for concerning check-ins and abnormal vitals
+- Missed daily check-in escalation via the existing cron route
+- Alert list/detail + acknowledge flow
+- Basic trend charts on the vitals page
+
+The existing `/api/cron/reminders` endpoint also checks for missed daily check-ins after 20:00 Asia/Bangkok and creates family alerts.

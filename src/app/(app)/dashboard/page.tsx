@@ -10,6 +10,7 @@ import {
   getOpenAlerts,
   syncTodayTasksForWorkspace,
 } from "@/lib/actions/task-events";
+import { getHealthDashboardSummary } from "@/lib/actions/health";
 
 export const metadata = { title: "Dashboard" };
 
@@ -17,10 +18,13 @@ export default async function DashboardPage() {
   const { workspace, membership } = await requireWorkspace();
   await syncTodayTasksForWorkspace();
 
-  const elders = await getElders(workspace.id);
-  const todayEvents = await getTodayTaskEvents(workspace.id);
-  const summary = await getTodayStatusSummary(workspace.id);
-  const alerts = await getOpenAlerts(workspace.id);
+  const [elders, todayEvents, summary, alerts, health] = await Promise.all([
+    getElders(workspace.id),
+    getTodayTaskEvents(workspace.id),
+    getTodayStatusSummary(workspace.id),
+    getOpenAlerts(workspace.id),
+    getHealthDashboardSummary(workspace.id),
+  ]);
 
   const pendingEvents = todayEvents.filter((e) => e.status === "pending");
   const missedEvents = todayEvents.filter((e) => e.status === "missed");
@@ -69,6 +73,34 @@ export default async function DashboardPage() {
             <CardHeader className="pb-2">
               <CardDescription>พลาด</CardDescription>
               <CardTitle className="text-3xl text-destructive">{summary.missed}</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold">สุขภาพวันนี้</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>Check-in แล้ว</CardDescription>
+              <CardTitle className="text-3xl">
+                {health.checkedInToday}/{health.totalElders}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>Vital alerts เปิดอยู่</CardDescription>
+              <CardTitle className="text-3xl text-warning-foreground">
+                {health.abnormalVitalsToday}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription>บันทึกค่าสุขภาพล่าสุด</CardDescription>
+              <CardTitle className="text-3xl">{health.latestVitals.length}</CardTitle>
             </CardHeader>
           </Card>
         </div>
@@ -150,7 +182,17 @@ export default async function DashboardPage() {
                   </Link>
                   <CardDescription>{elder.full_name}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex gap-2">
+                <CardContent className="flex flex-wrap gap-2">
+                  <Link href={`/elders/${elder.id}/check-in`}>
+                    <Button size="sm" variant="outline">
+                      Check-in
+                    </Button>
+                  </Link>
+                  <Link href={`/elders/${elder.id}/vitals`}>
+                    <Button size="sm" variant="outline">
+                      Vitals
+                    </Button>
+                  </Link>
                   <Link href={`/elders/${elder.id}/medications`}>
                     <Button size="sm" variant="outline">
                       ยา

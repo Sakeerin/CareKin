@@ -81,6 +81,7 @@ export interface NotificationLog {
   workspace_id: string;
   elder_id: string;
   task_event_id: string | null;
+  care_alert_id?: string | null;
   channel: ReminderChannel;
   notification_type: string;
   status: string;
@@ -95,6 +96,8 @@ export interface CareAlert {
   workspace_id: string;
   elder_id: string;
   task_event_id: string | null;
+  source_type?: string | null;
+  source_id?: string | null;
   alert_type: string;
   severity: CareAlertSeverity;
   title: string;
@@ -102,6 +105,7 @@ export interface CareAlert {
   status: CareAlertStatus;
   acknowledged_by: string | null;
   acknowledged_at: string | null;
+  resolved_at?: string | null;
   created_at: string;
   elders?: { full_name: string; nickname: string | null };
 }

@@ -3,6 +3,7 @@ import { createAdminClient, hasAdminClient } from "@/lib/supabase/admin";
 import { generateTaskEventsForWorkspace } from "@/lib/services/task-events";
 import { enqueueRemindersForPendingEvents } from "@/lib/services/task-events";
 import { processReminderQueue } from "@/lib/services/reminder-processor";
+import { processMissedDailyCheckIns } from "@/lib/services/alert-engine";
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -25,11 +26,13 @@ export async function GET(request: Request) {
 
   let totalGenerated = 0;
   let totalEnqueued = 0;
+  let totalCheckInAlerts = 0;
 
   for (const ws of workspaces ?? []) {
     const gen = await generateTaskEventsForWorkspace(supabase, ws.id);
     totalGenerated += gen.created;
     totalEnqueued += await enqueueRemindersForPendingEvents(supabase, ws.id);
+    totalCheckInAlerts += await processMissedDailyCheckIns(supabase, ws.id);
   }
 
   const processed = await processReminderQueue(supabase);
@@ -38,6 +41,7 @@ export async function GET(request: Request) {
     ok: true,
     generated: totalGenerated,
     enqueued: totalEnqueued,
+    checkInAlerts: totalCheckInAlerts,
     ...processed,
   });
 }

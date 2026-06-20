@@ -1,6 +1,6 @@
-# CareKin — Phase 2 foundation schema
-# Run via Supabase CLI: supabase db push
-# Or paste into Supabase SQL Editor
+-- CareKin — Phase 2 foundation schema
+-- Run via Supabase CLI: supabase db push
+-- Or paste into Supabase SQL Editor
 
 -- Extensions
 create extension if not exists "pgcrypto";

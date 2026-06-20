@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { requireWorkspace, canManageWorkspace } from "@/lib/auth/session";
@@ -30,9 +31,14 @@ export default async function NotificationsPage() {
                   <div>
                     <div className="mb-1 flex items-center gap-2">
                       <AlertBadge level={alert.severity === "urgent" ? "urgent" : alert.severity === "family" ? "family" : "info"} />
-                      <span className="font-medium">{alert.title}</span>
+                      <Link href={`/alerts/${alert.id}`} className="font-medium hover:underline">
+                        {alert.title}
+                      </Link>
                     </div>
                     <p className="text-sm">{alert.message}</p>
+                    <Link href={`/alerts/${alert.id}`} className="text-xs text-primary hover:underline">
+                      ดูรายละเอียด
+                    </Link>
                     <p className="text-xs text-muted-foreground">
                       {new Date(alert.created_at).toLocaleString("th-TH")}
                     </p>

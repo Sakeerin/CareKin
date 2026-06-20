@@ -55,7 +55,13 @@ export default async function ElderDetailPage({
           </h1>
           <p className="text-muted-foreground">{elder.full_name}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/elders/${id}/check-in`}>
+            <Button variant="outline" size="sm">Check-in</Button>
+          </Link>
+          <Link href={`/elders/${id}/vitals`}>
+            <Button variant="outline" size="sm">Vitals</Button>
+          </Link>
           <Link href={`/elders/${id}/medications`}>
             <Button variant="outline" size="sm">ยา</Button>
           </Link>

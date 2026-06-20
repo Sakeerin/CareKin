@@ -1082,6 +1082,10 @@ AI ห้ามตอบแบบ:
 
 ## Phase 4: Check-in, vitals, and alerts
 
+> **สถานะ:** ✅ Implemented (code + schema) — 2026-06-20  
+> **Setup:** Apply `supabase/migrations/20260614000000_phase4_checkin_vitals.sql` after Phase 3  
+> **Docs:** `README.md` (Phase 4 section)
+
 ระยะเวลา: 3-4 สัปดาห์
 
 ### Goals
@@ -1090,30 +1094,36 @@ AI ห้ามตอบแบบ:
 
 ### Tasks
 
-1. ทำ daily check-in form
-2. ทำ elderly mode UI
-3. ทำ caregiver mode UI
-4. ทำ vital signs entry
-5. ทำ threshold settings
-6. ทำ alert rules
-7. ทำ alert list/detail
-8. ทำ acknowledge alert
-9. ทำ alert escalation
-10. ทำ basic trend chart
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | ทำ daily check-in form | ✅ Done | `/elders/[id]/check-in` |
+| 2 | ทำ elderly mode UI | ✅ Done | `/elders/[id]/check-in/elder` |
+| 3 | ทำ caregiver mode UI | ✅ Done | caregiver check-in form with vitals |
+| 4 | ทำ vital signs entry | ✅ Done | `/elders/[id]/vitals` |
+| 5 | ทำ threshold settings | ✅ Done | `/elders/[id]/thresholds` |
+| 6 | ทำ alert rules | ✅ Done | default + custom rules via `alert_rules` |
+| 7 | ทำ alert list/detail | ✅ Done | `/notifications`, `/alerts/[id]` |
+| 8 | ทำ acknowledge alert | ✅ Done | existing acknowledge action + detail/list UI |
+| 9 | ทำ alert escalation | ✅ Done | alert engine + missed daily check-in cron |
+| 10 | ทำ basic trend chart | ✅ Done | SVG trend charts on vitals page |
 
 ### Deliverables
 
-- daily check-in
-- vitals logging
-- alert engine
-- trend dashboard
+| Deliverable | Status | Location |
+|---|---|---|
+| daily check-in | ✅ Done | caregiver + elder mode routes |
+| vitals logging | ✅ Done | `vital_logs`, `/elders/[id]/vitals` |
+| alert engine | ✅ Done | `src/lib/services/alert-engine.ts` |
+| trend dashboard | ✅ Done | dashboard health cards + vitals trend charts |
 
 ### Exit criteria
 
-- caregiver กรอก check-in ได้เร็ว
-- vital values ถูกบันทึกและแสดง trend
-- abnormal ตาม threshold สร้าง alert ได้
-- family admin acknowledge alert ได้
+| Criterion | Status |
+|---|---|
+| caregiver กรอก check-in ได้เร็ว | ✅ Built — single-page form |
+| vital values ถูกบันทึกและแสดง trend | ✅ Built — vitals page + SVG trend |
+| abnormal ตาม threshold สร้าง alert ได้ | ✅ Built — default/custom threshold engine |
+| family admin acknowledge alert ได้ | ✅ Built — `/notifications` + `/alerts/[id]` |
 
 ## Phase 5: Report and AI summary
 

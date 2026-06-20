@@ -1,4 +1,4 @@
-# CareKin — Phase 3: Care tasks and reminders
+-- CareKin — Phase 3: Care tasks and reminders
 
 -- Enums
 create type public.task_event_status as enum ('pending', 'completed', 'missed', 'skipped');
