@@ -16,6 +16,7 @@ import {
   getWorkspaceSubscription,
   selectBillingPlanAction,
 } from "@/lib/actions/commercial";
+import { setPreferredLocaleAction } from "@/lib/actions/scale";
 import { BILLING_PLANS, getPlan } from "@/lib/plans";
 
 export const metadata = { title: "ตั้งค่า" };
@@ -62,6 +63,21 @@ export default async function SettingsPage() {
             />
             <p className="text-sm text-muted-foreground">อีเมล: {profile?.email}</p>
             <Button type="submit">บันทึกโปรไฟล์</Button>
+          </FormAction>
+          <FormAction action={setPreferredLocaleAction} className="mt-6 space-y-4 border-t border-border pt-4">
+            <FormSelect
+              label="Preferred language"
+              name="locale"
+              defaultValue={profile?.preferred_locale ?? "th"}
+              options={[
+                { value: "th", label: "ไทย" },
+                { value: "en", label: "English" },
+              ]}
+            />
+            <p className="text-sm text-muted-foreground">
+              Phase 8 stores locale preference first; full UI translation can migrate copy module by module.
+            </p>
+            <Button type="submit" variant="outline">บันทึกภาษา</Button>
           </FormAction>
         </CardContent>
       </Card>

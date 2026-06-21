@@ -32,6 +32,7 @@ supabase/migrations/20260614000000_phase4_checkin_vitals.sql
 supabase/migrations/20260615000000_phase5_reports_ai_summary.sql
 supabase/migrations/20260616000000_phase6_pilot_launch.sql
 supabase/migrations/20260617000000_phase7_commercial_launch.sql
+supabase/migrations/20260618000000_phase8_scale_advanced_features.sql
 ```
 
 4. Run the dev server:
@@ -77,6 +78,13 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/elders/[id]/routines` | Routine care tasks |
 | `/feedback` | Pilot bug / UX feedback form |
 | `/support` | Launch support tickets and SLA workflow |
+| `/scale` | Phase 8 feature gates and advanced feature hub |
+| `/facility` | Facility dashboard readiness |
+| `/marketplace` | Caregiver marketplace profile and request workflow |
+| `/integrations` | Telecare and device integration requests |
+| `/referrals` | Clinic referral coordination workflow |
+| `/wellness` | Insurance/provider wellness programs |
+| `/compliance` | Regulatory gate checklist and incident log |
 | `/ops/pilot` | Pilot operations dashboard for admins |
 | `/members` | Invite & manage members |
 | `/settings` | Profile & workspace settings |
@@ -202,3 +210,23 @@ Phase 7 adds a controlled commercial launch layer on top of the pilot product.
 - Commercial launch, support SLA, and sales asset docs in `docs/`
 
 See `docs/commercial_launch_plan.md`, `docs/support_sla.md`, and `docs/sales_assets.md` for operating details.
+
+## Phase 8 — Scale and advanced features
+
+Phase 8 adds the foundation for scale workflows while keeping clinical-adjacent features behind explicit safety gates.
+
+### Phase 8 deliverables
+
+- Feature gate system for advanced and clinical-adjacent workflows
+- Facility dashboard readiness and provider profile tracking
+- Caregiver marketplace profiles and family request workflow
+- Telecare session request records
+- Medical/fall device integration request records
+- Clinic referral coordination drafts
+- Wellness program and enrollment tracking
+- Scale incident logging and regulatory/safety docs
+- Preferred locale storage for future multilingual UI
+
+Clinical-adjacent features such as telecare, device integrations, fall detection, AI voice check-in, and clinic referrals require approval in `/scale` before related actions can be created.
+
+See `docs/phase8_scale_plan.md`, `docs/regulatory_boundary_memo.md`, `docs/clinical_safety_case.md`, and `docs/incident_response.md`.

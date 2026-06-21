@@ -1278,27 +1278,33 @@ Set `LAUNCH_INVITE_REQUIRED=true` in production when switching signup to invite-
 
 ระยะเวลา: 3-12 เดือนหลัง launch
 
+**Status:** ✅ Implemented (scale foundation + safety-gated advanced workflows)
+
 ### Potential features
 
-1. caregiver marketplace
-2. facility dashboard
-3. telecare video call
-4. medical device integration
-5. fall detection device integration
-6. AI voice check-in
-7. dementia-friendly UX
-8. clinic referral workflow
-9. insurance wellness package
-10. multilingual support
+| Feature | Status | Notes |
+|---|---|---|
+| caregiver marketplace | ✅ Implemented foundation | Caregiver profile listing + family marketplace request workflow at `/marketplace` |
+| facility dashboard | ✅ Implemented foundation | Facility profile + operational metric cards at `/facility` |
+| telecare video call | ✅ Implemented readiness | Consent-gated telecare request records at `/integrations`; no video provider tokens yet |
+| medical device integration | ✅ Implemented readiness | Consent-gated device integration request records at `/integrations`; no ingestion/diagnosis yet |
+| fall detection device integration | ✅ Implemented readiness | Fall device requests map to `fall_detection` feature gate before creation |
+| AI voice check-in | ✅ Safety gate implemented | Feature key and regulatory gate exist; model implementation intentionally blocked pending validation |
+| dementia-friendly UX | ✅ Safety gate implemented | Feature key/gate exists for future elder UX variants |
+| clinic referral workflow | ✅ Implemented foundation | Coordination drafts at `/referrals`; avoids diagnosis/treatment claims |
+| insurance wellness package | ✅ Implemented foundation | Wellness program + enrollment tracking at `/wellness` |
+| multilingual support | ✅ Implemented foundation | `profiles.preferred_locale` + settings control; full UI translation can migrate incrementally |
 
 ### Before adding clinical features
 
-- regulatory classification review
-- clinical safety case
-- medical advisor review
-- risk management process
-- model validation if AI involved
-- incident reporting workflow
+| Gate | Status | Notes |
+|---|---|---|
+| regulatory classification review | ✅ Documented | `docs/regulatory_boundary_memo.md` |
+| clinical safety case | ✅ Documented | `docs/clinical_safety_case.md` |
+| medical advisor review | ✅ Gated | Feature gates at `/scale` track approval state |
+| risk management process | ✅ Implemented foundation | `scale_incidents` + `/compliance` incident log |
+| model validation if AI involved | ✅ Gated | `ai_voice_checkin` stays blocked until approved |
+| incident reporting workflow | ✅ Implemented | `/compliance` + `docs/incident_response.md` |
 
 ---
 

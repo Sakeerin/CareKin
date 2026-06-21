@@ -11,6 +11,7 @@ const navItems = [
   { href: "/elders", label: "ผู้สูงวัย" },
   { href: "/notifications", label: "แจ้งเตือน" },
   { href: "/support", label: "Support" },
+  { href: "/scale", label: "Scale" },
   { href: "/members", label: "สมาชิก" },
   { href: "/settings", label: "ตั้งค่า" },
 ];

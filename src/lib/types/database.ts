@@ -13,6 +13,7 @@ export interface Profile {
   email: string;
   display_name: string | null;
   phone: string | null;
+  preferred_locale?: "th" | "en";
   created_at: string;
   updated_at: string;
 }
