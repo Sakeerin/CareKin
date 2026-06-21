@@ -11,6 +11,7 @@ import {
 } from "@/lib/schemas/workspace";
 import type { ActionResult } from "@/lib/actions/auth";
 import { logAuditEvent } from "@/lib/actions/audit";
+import { attachClaimedLaunchInviteWorkspace } from "@/lib/services/launch-invites";
 
 export async function createWorkspaceAction(
   _prev: ActionResult,
@@ -44,11 +45,7 @@ export async function createWorkspaceAction(
     .maybeSingle();
 
   if (ownedWorkspace) {
-    await supabase
-      .from("launch_invites")
-      .update({ claimed_workspace_id: ownedWorkspace.id })
-      .eq("claimed_by", user.id)
-      .is("claimed_workspace_id", null);
+    await attachClaimedLaunchInviteWorkspace(user.id, ownedWorkspace.id);
   }
 
   revalidatePath("/dashboard");

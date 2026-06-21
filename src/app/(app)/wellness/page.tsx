@@ -44,48 +44,58 @@ export default async function WellnessPage() {
           </Card>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Enroll elder</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormAction action={createWellnessEnrollmentAction} className="space-y-4">
-              <FormSelect
-                label="Program"
-                name="programId"
-                options={data.wellnessPrograms.map((program) => ({
-                  value: program.id,
-                  label: program.partner_name ? `${program.name} · ${program.partner_name}` : program.name,
-                }))}
-              />
-              <FormSelect
-                label="ผู้สูงวัย"
-                name="elderId"
-                options={[
-                  { value: "", label: "ไม่ระบุ" },
-                  ...elders.map((elder) => ({ value: elder.id, label: elder.nickname ?? elder.full_name })),
-                ]}
-              />
-              <FormSelect
-                label="Status"
-                name="status"
-                defaultValue="interested"
-                options={[
-                  { value: "interested", label: "Interested" },
-                  { value: "enrolled", label: "Enrolled" },
-                  { value: "active", label: "Active" },
-                  { value: "paused", label: "Paused" },
-                  { value: "completed", label: "Completed" },
-                  { value: "cancelled", label: "Cancelled" },
-                ]}
-              />
-              <FormTextarea label="Goals" name="goals" rows={4} />
-              <Button type="submit" disabled={data.wellnessPrograms.length === 0}>
-                บันทึก enrollment
-              </Button>
-            </FormAction>
-          </CardContent>
-        </Card>
+        {canManage ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Enroll elder</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {data.wellnessPrograms.length === 0 ? (
+                <p className="text-sm text-muted-foreground">สร้าง wellness program ก่อนจึงจะ enroll ผู้สูงวัยได้</p>
+              ) : (
+                <FormAction action={createWellnessEnrollmentAction} className="space-y-4">
+                  <FormSelect
+                    label="Program"
+                    name="programId"
+                    options={data.wellnessPrograms.map((program) => ({
+                      value: program.id,
+                      label: program.partner_name ? `${program.name} · ${program.partner_name}` : program.name,
+                    }))}
+                  />
+                  <FormSelect
+                    label="ผู้สูงวัย"
+                    name="elderId"
+                    options={[
+                      { value: "", label: "ไม่ระบุ" },
+                      ...elders.map((elder) => ({ value: elder.id, label: elder.nickname ?? elder.full_name })),
+                    ]}
+                  />
+                  <FormSelect
+                    label="Status"
+                    name="status"
+                    defaultValue="interested"
+                    options={[
+                      { value: "interested", label: "Interested" },
+                      { value: "enrolled", label: "Enrolled" },
+                      { value: "active", label: "Active" },
+                      { value: "paused", label: "Paused" },
+                      { value: "completed", label: "Completed" },
+                      { value: "cancelled", label: "Cancelled" },
+                    ]}
+                  />
+                  <FormTextarea label="Goals" name="goals" rows={4} />
+                  <Button type="submit">บันทึก enrollment</Button>
+                </FormAction>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="py-8 text-center text-muted-foreground">
+              เฉพาะ owner / family admin เท่านั้นที่ enroll wellness program ได้
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Card>

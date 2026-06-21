@@ -69,7 +69,7 @@ export default async function CompliancePage() {
               />
             </div>
             <FormField label="Title" name="title" required />
-            <FormTextarea label="Description" name="description" rows={5} />
+            <FormTextarea label="Description" name="description" rows={5} required />
             <Button type="submit">บันทึก incident</Button>
           </FormAction>
         </CardContent>

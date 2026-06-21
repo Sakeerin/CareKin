@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { joinWaitlistAction } from "@/lib/actions/commercial";
 
-export default function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ ref?: string }>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const referralCode = typeof params.ref === "string" ? params.ref.slice(0, 40) : "";
+
   return (
     <MarketingPage>
       <main>
@@ -111,7 +118,7 @@ export default function HomePage() {
                 />
                 <FormField label="องค์กร (ถ้ามี)" name="organization" />
                 <FormField label="เบอร์โทร (ถ้ามี)" name="phone" />
-                <FormField label="Referral code (ถ้ามี)" name="referralCode" />
+                <FormField label="Referral code (ถ้ามี)" name="referralCode" defaultValue={referralCode} />
                 <FormTextarea label="บริบทการดูแล" name="careContext" rows={4} />
                 <Button type="submit">ส่งคำขอ invite</Button>
               </FormAction>

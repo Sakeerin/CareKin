@@ -29,7 +29,9 @@ export function FormAction({ action, children, className }: FormActionProps) {
           บันทึกเรียบร้อย
         </div>
       )}
-      {children}
+      <fieldset disabled={pending} className="contents">
+        {children}
+      </fieldset>
       {pending && (
         <p className="mt-2 text-sm text-muted-foreground">กำลังดำเนินการ...</p>
       )}
@@ -72,12 +74,14 @@ export function FormTextarea({
   name,
   placeholder,
   defaultValue,
+  required,
   rows = 3,
 }: {
   label: string;
   name: string;
   placeholder?: string;
   defaultValue?: string;
+  required?: boolean;
   rows?: number;
 }) {
   return (
@@ -87,6 +91,7 @@ export function FormTextarea({
         name={name}
         placeholder={placeholder}
         defaultValue={defaultValue}
+        required={required}
         rows={rows}
         className="input-field resize-none"
       />
@@ -99,16 +104,26 @@ export function FormSelect({
   name,
   options,
   defaultValue,
+  required,
+  disabled,
 }: {
   label: string;
   name: string;
   options: { value: string; label: string }[];
   defaultValue?: string;
+  required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label className="block space-y-1.5">
       <span className="text-sm font-medium">{label}</span>
-      <select name={name} defaultValue={defaultValue} className="input-field">
+      <select
+        name={name}
+        defaultValue={defaultValue}
+        required={required}
+        disabled={disabled}
+        className="input-field"
+      >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

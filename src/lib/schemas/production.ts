@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const urlOrPathSchema = z
+  .string()
+  .refine((value) => value === "" || value.startsWith("/") || z.string().url().safeParse(value).success, {
+    message: "ต้องเป็น URL หรือ path ที่ขึ้นต้นด้วย /",
+  });
+
 export const productionCheckSchema = z.object({
   category: z.enum([
     "migration",
@@ -35,7 +41,7 @@ export const releaseReadinessSchema = z.object({
   status: z.enum(["draft", "ready", "released", "rolled_back"]),
   commitSha: z.string().max(80).optional().or(z.literal("")),
   migrationVersion: z.string().max(120).optional().or(z.literal("")),
-  healthCheckUrl: z.string().url("URL ไม่ถูกต้อง").optional().or(z.literal("")),
+  healthCheckUrl: urlOrPathSchema.optional().or(z.literal("")),
   rollbackPlan: z.string().max(2500).optional().or(z.literal("")),
   migrationsApplied: z.boolean(),
   buildPassed: z.boolean(),

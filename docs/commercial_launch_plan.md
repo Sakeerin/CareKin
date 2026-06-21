@@ -10,6 +10,9 @@ LAUNCH_INVITE_REQUIRED=true
 
 When enabled, `/signup` requires a valid `launch_invites.code`. The first launch batch should target 50-100 paying family accounts or 3-5 B2B/provider customers.
 
+Invite-only signup validation and invite claiming run on the server with `SUPABASE_SERVICE_ROLE_KEY`.
+Set that key in production before enabling `LAUNCH_INVITE_REQUIRED=true`.
+
 ## Launch checklist
 
 1. Apply `supabase/migrations/20260617000000_phase7_commercial_launch.sql`.

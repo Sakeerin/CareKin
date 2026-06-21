@@ -70,7 +70,7 @@ export default async function MarketplacePage() {
                   ...elders.map((elder) => ({ value: elder.id, label: elder.nickname ?? elder.full_name })),
                 ]}
               />
-              <FormTextarea label="Care need" name="careNeed" rows={5} />
+              <FormTextarea label="Care need" name="careNeed" rows={5} required />
               <FormTextarea label="Schedule notes" name="scheduleNotes" rows={3} />
               <FormField label="Preferred area" name="preferredArea" />
               <Button type="submit">ส่ง request</Button>

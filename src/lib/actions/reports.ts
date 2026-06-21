@@ -265,17 +265,30 @@ export async function getLatestReportShares(reportId: string): Promise<ReportSha
 export async function getSharedReport(token: string): Promise<ReportShare | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("report_shares")
-    .select("*, reports(*, elders(full_name, nickname))")
-    .eq("token", token)
-    .is("revoked_at", null)
-    .gt("expires_at", new Date().toISOString())
-    .single();
+    .rpc("get_shared_report_by_token", { p_token: token })
+    .maybeSingle();
 
   if (error || !data) return null;
+  const row = data as {
+    share_id: string;
+    report_id: string;
+    token: string;
+    expires_at: string;
+    revoked_at: string | null;
+    created_by: string | null;
+    created_at: string;
+    report: unknown;
+  };
+
   return {
-    ...(data as ReportShare),
-    reports: parseReport((data as ReportShare).reports),
+    id: row.share_id,
+    report_id: row.report_id,
+    token: row.token,
+    expires_at: row.expires_at,
+    revoked_at: row.revoked_at,
+    created_by: row.created_by,
+    created_at: row.created_at,
+    reports: parseReport(row.report),
   };
 }
 

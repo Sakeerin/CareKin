@@ -3,13 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FormAction, FormField, FormSelect, FormTextarea } from "@/components/app/form-action";
 import { createClinicalReferralAction, getScaleDashboardData } from "@/lib/actions/scale";
 import { getElders } from "@/lib/actions/elder";
-import { requireWorkspace } from "@/lib/auth/session";
+import { canManageWorkspace, requireWorkspace } from "@/lib/auth/session";
 
 export const metadata = { title: "Clinic referrals" };
 
 export default async function ReferralsPage() {
-  const { workspace } = await requireWorkspace();
+  const { workspace, membership } = await requireWorkspace();
   const [data, elders] = await Promise.all([getScaleDashboardData(), getElders(workspace.id)]);
+  const canManage = canManageWorkspace(membership.role);
 
   return (
     <div className="space-y-6">
@@ -20,33 +21,41 @@ export default async function ReferralsPage() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create referral draft</CardTitle>
-          <CardDescription>Requires `clinic_referrals` gate approval before use.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormAction action={createClinicalReferralAction} className="space-y-4">
-            <FormSelect
-              label="ผู้สูงวัย"
-              name="elderId"
-              options={[
-                { value: "", label: "ไม่ระบุ" },
-                ...elders.map((elder) => ({ value: elder.id, label: elder.nickname ?? elder.full_name })),
-              ]}
-            />
-            <FormField label="Report ID (optional)" name="reportId" />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Clinic name" name="clinicName" required />
-              <FormField label="Contact name" name="contactName" />
-              <FormField label="Contact email" name="contactEmail" type="email" />
-              <FormField label="Contact phone" name="contactPhone" />
-            </div>
-            <FormTextarea label="Reason for referral" name="reason" rows={5} />
-            <Button type="submit">สร้าง referral</Button>
-          </FormAction>
-        </CardContent>
-      </Card>
+      {canManage ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Create referral draft</CardTitle>
+            <CardDescription>Requires `clinic_referrals` gate approval before use.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FormAction action={createClinicalReferralAction} className="space-y-4">
+              <FormSelect
+                label="ผู้สูงวัย"
+                name="elderId"
+                options={[
+                  { value: "", label: "ไม่ระบุ" },
+                  ...elders.map((elder) => ({ value: elder.id, label: elder.nickname ?? elder.full_name })),
+                ]}
+              />
+              <FormField label="Report ID (optional)" name="reportId" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField label="Clinic name" name="clinicName" required />
+                <FormField label="Contact name" name="contactName" />
+                <FormField label="Contact email" name="contactEmail" type="email" />
+                <FormField label="Contact phone" name="contactPhone" />
+              </div>
+              <FormTextarea label="Reason for referral" name="reason" rows={5} required />
+              <Button type="submit">สร้าง referral</Button>
+            </FormAction>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="py-8 text-center text-muted-foreground">
+            เฉพาะ owner / family admin เท่านั้นที่สร้าง clinic referral ได้
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

@@ -68,7 +68,7 @@ export default async function SupportPage() {
               />
             </div>
             <FormField label="หัวข้อ" name="subject" required />
-            <FormTextarea label="รายละเอียด" name="description" rows={6} />
+            <FormTextarea label="รายละเอียด" name="description" rows={6} required />
             <FormField label="URL หน้าเว็บ (ถ้ามี)" name="pageUrl" />
             <Button type="submit">ส่ง ticket</Button>
           </FormAction>

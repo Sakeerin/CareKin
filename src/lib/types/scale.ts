@@ -47,6 +47,17 @@ export const CLINICAL_ADJACENT_FEATURES: Phase8FeatureKey[] = [
   "clinic_referrals",
 ];
 
+export const GATED_PHASE8_FEATURES: Phase8FeatureKey[] = [
+  "caregiver_marketplace",
+  "facility_dashboard",
+  "telecare_sessions",
+  "medical_device_integration",
+  "fall_detection",
+  "ai_voice_checkin",
+  "clinic_referrals",
+  "insurance_wellness",
+];
+
 export interface FeatureGate {
   id: string;
   workspace_id: string | null;

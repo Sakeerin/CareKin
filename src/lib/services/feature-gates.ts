@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { FeatureGate, Phase8FeatureKey } from "@/lib/types/scale";
-import { CLINICAL_ADJACENT_FEATURES } from "@/lib/types/scale";
+import { GATED_PHASE8_FEATURES } from "@/lib/types/scale";
 
 export async function getFeatureGates(workspaceId: string): Promise<FeatureGate[]> {
   const supabase = await createClient();
@@ -33,8 +33,8 @@ export async function getFeatureGateError(
   workspaceId: string,
   featureKey: Phase8FeatureKey,
 ): Promise<string | null> {
-  if (!CLINICAL_ADJACENT_FEATURES.includes(featureKey)) return null;
+  if (!GATED_PHASE8_FEATURES.includes(featureKey)) return null;
   const approved = await isFeatureApproved(workspaceId, featureKey);
   if (approved) return null;
-  return "ฟีเจอร์นี้ต้องผ่าน regulatory / clinical safety review ก่อนเปิดใช้งาน";
+  return "ฟีเจอร์นี้ต้องผ่าน review และเปิด feature gate ก่อนใช้งาน";
 }

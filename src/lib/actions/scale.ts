@@ -41,6 +41,53 @@ function optionalNumber(value: number | "" | undefined): number | null {
   return typeof value === "number" ? value : null;
 }
 
+async function validateElderInWorkspace(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  workspaceId: string,
+  elderId: string | null,
+): Promise<string | null> {
+  if (!elderId) return null;
+  const { data, error } = await supabase
+    .from("elders")
+    .select("id")
+    .eq("id", elderId)
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (error || !data) return "ผู้สูงวัยไม่อยู่ใน workspace นี้";
+  return null;
+}
+
+async function validateReportInWorkspace(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  workspaceId: string,
+  reportId: string | null,
+): Promise<string | null> {
+  if (!reportId) return null;
+  const { data, error } = await supabase
+    .from("reports")
+    .select("id")
+    .eq("id", reportId)
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (error || !data) return "รายงานไม่อยู่ใน workspace นี้";
+  return null;
+}
+
+async function validateWellnessProgramInWorkspace(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  workspaceId: string,
+  programId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("wellness_programs")
+    .select("id")
+    .eq("id", programId)
+    .or(`workspace_id.eq.${workspaceId},workspace_id.is.null`)
+    .maybeSingle();
+  if (error || !data) return "Wellness program ไม่อยู่ใน workspace นี้";
+  return null;
+}
+
 async function requireScaleAdmin(): Promise<
   | { ok: true; userId: string; workspaceId: string }
   | { ok: false; result: ActionResult }
@@ -177,6 +224,10 @@ export async function upsertCaregiverProfileAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const user = await requireUser();
+  const { workspace } = await requireWorkspace();
+  const gateError = await getFeatureGateError(workspace.id, "caregiver_marketplace");
+  if (gateError) return { error: gateError };
+
   const parsed = caregiverProfileSchema.safeParse({
     displayName: formData.get("displayName"),
     serviceArea: formData.get("serviceArea"),
@@ -226,6 +277,13 @@ export async function createMarketplaceRequestAction(
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "ข้อมูลไม่ถูกต้อง" };
 
   const supabase = await createClient();
+  const elderScopeError = await validateElderInWorkspace(
+    supabase,
+    workspace.id,
+    nullable(parsed.data.elderId),
+  );
+  if (elderScopeError) return { error: elderScopeError };
+
   const { data, error } = await supabase
     .from("marketplace_requests")
     .insert({
@@ -254,9 +312,9 @@ export async function requestTelecareSessionAction(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const user = await requireUser();
-  const { workspace } = await requireWorkspace();
-  const gateError = await getFeatureGateError(workspace.id, "telecare_sessions");
+  const admin = await requireScaleAdmin();
+  if (!admin.ok) return admin.result;
+  const gateError = await getFeatureGateError(admin.workspaceId, "telecare_sessions");
   if (gateError) return { error: gateError };
 
   const parsed = telecareSessionSchema.safeParse({
@@ -272,12 +330,19 @@ export async function requestTelecareSessionAction(
   if (!parsed.data.consentConfirmed) return { error: "ต้องยืนยัน consent ก่อนขอ telecare session" };
 
   const supabase = await createClient();
+  const elderScopeError = await validateElderInWorkspace(
+    supabase,
+    admin.workspaceId,
+    nullable(parsed.data.elderId),
+  );
+  if (elderScopeError) return { error: elderScopeError };
+
   const { data, error } = await supabase
     .from("telecare_sessions")
     .insert({
-      workspace_id: workspace.id,
+      workspace_id: admin.workspaceId,
       elder_id: nullable(parsed.data.elderId),
-      requested_by: user.id,
+      requested_by: admin.userId,
       clinician_name: nullable(parsed.data.clinicianName),
       scheduled_at: parsed.data.scheduledAt ? new Date(parsed.data.scheduledAt).toISOString() : null,
       provider: nullable(parsed.data.provider),
@@ -289,7 +354,7 @@ export async function requestTelecareSessionAction(
 
   if (error || !data) return { error: error?.message ?? "สร้าง telecare session ไม่สำเร็จ" };
   await logAuditEvent({
-    workspaceId: workspace.id,
+    workspaceId: admin.workspaceId,
     action: "scale.telecare_requested",
     resourceType: "telecare_session",
     resourceId: data.id,
@@ -302,8 +367,8 @@ export async function requestDeviceIntegrationAction(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const user = await requireUser();
-  const { workspace } = await requireWorkspace();
+  const admin = await requireScaleAdmin();
+  if (!admin.ok) return admin.result;
   const parsed = deviceIntegrationSchema.safeParse({
     elderId: formData.get("elderId"),
     vendor: formData.get("vendor"),
@@ -317,30 +382,37 @@ export async function requestDeviceIntegrationAction(
 
   const featureKey =
     parsed.data.deviceType.toLowerCase().includes("fall") ? "fall_detection" : "medical_device_integration";
-  const gateError = await getFeatureGateError(workspace.id, featureKey);
+  const gateError = await getFeatureGateError(admin.workspaceId, featureKey);
   if (gateError) return { error: gateError };
   if (!parsed.data.consentConfirmed) return { error: "ต้องยืนยัน consent ก่อนเชื่อม device" };
 
   const supabase = await createClient();
+  const elderScopeError = await validateElderInWorkspace(
+    supabase,
+    admin.workspaceId,
+    nullable(parsed.data.elderId),
+  );
+  if (elderScopeError) return { error: elderScopeError };
+
   const { data, error } = await supabase
     .from("device_integrations")
     .insert({
-      workspace_id: workspace.id,
+      workspace_id: admin.workspaceId,
       elder_id: nullable(parsed.data.elderId),
       vendor: parsed.data.vendor,
       device_type: parsed.data.deviceType,
       external_reference: nullable(parsed.data.externalReference),
       consent_confirmed: true,
-      status: "pending_consent",
+      status: "requested",
       notes: nullable(parsed.data.notes),
-      created_by: user.id,
+      created_by: admin.userId,
     })
     .select("id")
     .single();
 
   if (error || !data) return { error: error?.message ?? "สร้าง device integration ไม่สำเร็จ" };
   await logAuditEvent({
-    workspaceId: workspace.id,
+    workspaceId: admin.workspaceId,
     action: "scale.device_integration_requested",
     resourceType: "device_integration",
     resourceId: data.id,
@@ -354,9 +426,9 @@ export async function createClinicalReferralAction(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const user = await requireUser();
-  const { workspace } = await requireWorkspace();
-  const gateError = await getFeatureGateError(workspace.id, "clinic_referrals");
+  const admin = await requireScaleAdmin();
+  if (!admin.ok) return admin.result;
+  const gateError = await getFeatureGateError(admin.workspaceId, "clinic_referrals");
   if (gateError) return { error: gateError };
 
   const parsed = clinicalReferralSchema.safeParse({
@@ -372,10 +444,24 @@ export async function createClinicalReferralAction(
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "ข้อมูลไม่ถูกต้อง" };
 
   const supabase = await createClient();
+  const elderScopeError = await validateElderInWorkspace(
+    supabase,
+    admin.workspaceId,
+    nullable(parsed.data.elderId),
+  );
+  if (elderScopeError) return { error: elderScopeError };
+
+  const reportScopeError = await validateReportInWorkspace(
+    supabase,
+    admin.workspaceId,
+    nullable(parsed.data.reportId),
+  );
+  if (reportScopeError) return { error: reportScopeError };
+
   const { data, error } = await supabase
     .from("clinical_referrals")
     .insert({
-      workspace_id: workspace.id,
+      workspace_id: admin.workspaceId,
       elder_id: nullable(parsed.data.elderId),
       report_id: nullable(parsed.data.reportId),
       clinic_name: parsed.data.clinicName,
@@ -383,14 +469,14 @@ export async function createClinicalReferralAction(
       contact_email: nullable(parsed.data.contactEmail),
       contact_phone: nullable(parsed.data.contactPhone),
       reason: parsed.data.reason,
-      created_by: user.id,
+      created_by: admin.userId,
     })
     .select("id")
     .single();
 
   if (error || !data) return { error: error?.message ?? "สร้าง referral ไม่สำเร็จ" };
   await logAuditEvent({
-    workspaceId: workspace.id,
+    workspaceId: admin.workspaceId,
     action: "scale.clinical_referral_created",
     resourceType: "clinical_referral",
     resourceId: data.id,
@@ -435,9 +521,9 @@ export async function createWellnessEnrollmentAction(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const user = await requireUser();
-  const { workspace } = await requireWorkspace();
-  const gateError = await getFeatureGateError(workspace.id, "insurance_wellness");
+  const admin = await requireScaleAdmin();
+  if (!admin.ok) return admin.result;
+  const gateError = await getFeatureGateError(admin.workspaceId, "insurance_wellness");
   if (gateError) return { error: gateError };
 
   const parsed = wellnessEnrollmentSchema.safeParse({
@@ -450,13 +536,20 @@ export async function createWellnessEnrollmentAction(
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "ข้อมูลไม่ถูกต้อง" };
 
   const supabase = await createClient();
+  const [programScopeError, elderScopeError] = await Promise.all([
+    validateWellnessProgramInWorkspace(supabase, admin.workspaceId, parsed.data.programId),
+    validateElderInWorkspace(supabase, admin.workspaceId, nullable(parsed.data.elderId)),
+  ]);
+  if (programScopeError) return { error: programScopeError };
+  if (elderScopeError) return { error: elderScopeError };
+
   const { error } = await supabase.from("wellness_enrollments").insert({
     program_id: parsed.data.programId,
-    workspace_id: workspace.id,
+    workspace_id: admin.workspaceId,
     elder_id: nullable(parsed.data.elderId),
     status: parsed.data.status,
     goals: nullable(parsed.data.goals),
-    enrolled_by: user.id,
+    enrolled_by: admin.userId,
     enrolled_at: new Date().toISOString(),
   });
 

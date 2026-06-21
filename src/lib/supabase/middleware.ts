@@ -32,15 +32,31 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/signup");
-  const isAppRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/elders") ||
-    pathname.startsWith("/settings") ||
-    pathname.startsWith("/members") ||
-    pathname.startsWith("/workspace") ||
-    pathname.startsWith("/tasks") ||
-    pathname.startsWith("/notifications") ||
-    pathname.startsWith("/invite");
+  const protectedPrefixes = [
+    "/dashboard",
+    "/elders",
+    "/settings",
+    "/members",
+    "/workspace",
+    "/tasks",
+    "/notifications",
+    "/alerts",
+    "/feedback",
+    "/support",
+    "/onboarding",
+    "/scale",
+    "/facility",
+    "/marketplace",
+    "/integrations",
+    "/referrals",
+    "/wellness",
+    "/compliance",
+    "/ops",
+    "/invite",
+  ];
+  const isAppRoute = protectedPrefixes.some((prefix) =>
+    pathname.startsWith(prefix),
+  );
 
   if (!user && isAppRoute) {
     const url = request.nextUrl.clone();

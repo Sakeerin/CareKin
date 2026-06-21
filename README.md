@@ -34,6 +34,7 @@ supabase/migrations/20260616000000_phase6_pilot_launch.sql
 supabase/migrations/20260617000000_phase7_commercial_launch.sql
 supabase/migrations/20260618000000_phase8_scale_advanced_features.sql
 supabase/migrations/20260619000000_phase9_production_readiness.sql
+supabase/migrations/20260620000000_security_hardening_shared_reports.sql
 ```
 
 4. Run the dev server:
@@ -109,7 +110,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 | Variable | Required | Description |
 |---|---|---|
-| `SUPABASE_SERVICE_ROLE_KEY` | Cron only | Service role key for background jobs |
+| `SUPABASE_SERVICE_ROLE_KEY` | Cron / launch gate | Service role key for background jobs and invite-only signup validation |
 | `CRON_SECRET` | Cron route | Bearer token for `/api/cron/reminders` |
 | `LINE_CHANNEL_ACCESS_TOKEN` | Optional | LINE push notifications |
 | `LINE_CHANNEL_SECRET` | Optional | Verify LINE webhook signatures |
@@ -201,7 +202,7 @@ Phase 7 adds a controlled commercial launch layer on top of the pilot product.
 
 | Variable | Required | Description |
 |---|---|---|
-| `LAUNCH_INVITE_REQUIRED` | Optional | Set to `true` in production to require invite codes during signup |
+| `LAUNCH_INVITE_REQUIRED` | Optional | Set to `true` in production to require invite codes during signup. Requires `SUPABASE_SERVICE_ROLE_KEY`. |
 
 ### Phase 7 deliverables
 

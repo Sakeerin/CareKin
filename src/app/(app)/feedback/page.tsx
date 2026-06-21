@@ -53,7 +53,13 @@ export default async function FeedbackPage() {
               />
             </div>
             <FormField label="หัวข้อ" name="title" required placeholder="เช่น กดบันทึก check-in แล้ว error" />
-            <FormTextarea label="รายละเอียด" name="description" rows={6} placeholder="เกิดอะไรขึ้น, ทำซ้ำอย่างไร, คาดหวังอะไร" />
+            <FormTextarea
+              label="รายละเอียด"
+              name="description"
+              rows={6}
+              required
+              placeholder="เกิดอะไรขึ้น, ทำซ้ำอย่างไร, คาดหวังอะไร"
+            />
             <FormField label="URL หน้าเว็บ (ไม่บังคับ)" name="pageUrl" placeholder="/elders/..." />
             <Button type="submit">ส่ง feedback</Button>
           </FormAction>

@@ -30,7 +30,7 @@ export function LoginForm() {
   );
 }
 
-export function SignupForm() {
+export function SignupForm({ inviteRequired = false }: { inviteRequired?: boolean }) {
   return (
     <Card>
       <CardHeader>
@@ -42,7 +42,11 @@ export function SignupForm() {
           <FormField label="ชื่อที่แสดง" name="displayName" required />
           <FormField label="อีเมล" name="email" type="email" required />
           <FormField label="รหัสผ่าน" name="password" type="password" required />
-          <FormField label="Invite code (ถ้ามี)" name="inviteCode" />
+          <FormField
+            label={inviteRequired ? "Invite code" : "Invite code (ถ้ามี)"}
+            name="inviteCode"
+            required={inviteRequired}
+          />
           <label className="flex items-start gap-3 text-sm text-muted-foreground">
             <input
               type="checkbox"

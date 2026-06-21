@@ -7,7 +7,7 @@ import { loginSchema, signupSchema } from "@/lib/schemas/auth";
 import {
   claimLaunchInvite,
   validateLaunchInviteForSignup,
-} from "@/lib/actions/commercial";
+} from "@/lib/services/launch-invites";
 
 export type ActionResult = { error?: string; success?: boolean };
 

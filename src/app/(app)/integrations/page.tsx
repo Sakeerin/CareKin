@@ -7,13 +7,14 @@ import {
   requestTelecareSessionAction,
 } from "@/lib/actions/scale";
 import { getElders } from "@/lib/actions/elder";
-import { requireWorkspace } from "@/lib/auth/session";
+import { canManageWorkspace, requireWorkspace } from "@/lib/auth/session";
 
 export const metadata = { title: "Telecare & devices" };
 
 export default async function IntegrationsPage() {
-  const { workspace } = await requireWorkspace();
+  const { workspace, membership } = await requireWorkspace();
   const [data, elders] = await Promise.all([getScaleDashboardData(), getElders(workspace.id)]);
+  const canManage = canManageWorkspace(membership.role);
   const elderOptions = [
     { value: "", label: "ไม่ระบุ" },
     ...elders.map((elder) => ({ value: elder.id, label: elder.nickname ?? elder.full_name })),
@@ -28,49 +29,57 @@ export default async function IntegrationsPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Request telecare session</CardTitle>
-            <CardDescription>Requires `telecare_sessions` gate approval and explicit consent confirmation.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FormAction action={requestTelecareSessionAction} className="space-y-4">
-              <FormSelect label="ผู้สูงวัย" name="elderId" options={elderOptions} />
-              <FormField label="Clinician name" name="clinicianName" />
-              <FormField label="Scheduled at" name="scheduledAt" type="datetime-local" />
-              <FormField label="Provider" name="provider" placeholder="Daily, LiveKit, Twilio..." />
-              <FormTextarea label="Agenda" name="agenda" rows={4} />
-              <label className="flex items-start gap-3 text-sm text-muted-foreground">
-                <input type="checkbox" name="consentConfirmed" className="mt-1 h-4 w-4" />
-                <span>ยืนยันว่ามี consent สำหรับ telecare session และการแชร์ข้อมูลที่เกี่ยวข้อง</span>
-              </label>
-              <Button type="submit">ขอ telecare session</Button>
-            </FormAction>
-          </CardContent>
-        </Card>
+      {canManage ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Request telecare session</CardTitle>
+              <CardDescription>Requires `telecare_sessions` gate approval and explicit consent confirmation.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormAction action={requestTelecareSessionAction} className="space-y-4">
+                <FormSelect label="ผู้สูงวัย" name="elderId" options={elderOptions} />
+                <FormField label="Clinician name" name="clinicianName" />
+                <FormField label="Scheduled at" name="scheduledAt" type="datetime-local" />
+                <FormField label="Provider" name="provider" placeholder="Daily, LiveKit, Twilio..." />
+                <FormTextarea label="Agenda" name="agenda" rows={4} required />
+                <label className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <input type="checkbox" name="consentConfirmed" className="mt-1 h-4 w-4" />
+                  <span>ยืนยันว่ามี consent สำหรับ telecare session และการแชร์ข้อมูลที่เกี่ยวข้อง</span>
+                </label>
+                <Button type="submit">ขอ telecare session</Button>
+              </FormAction>
+            </CardContent>
+          </Card>
 
+          <Card>
+            <CardHeader>
+              <CardTitle>Request device integration</CardTitle>
+              <CardDescription>Medical/fall device connections are consent-gated and do not create diagnosis.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormAction action={requestDeviceIntegrationAction} className="space-y-4">
+                <FormSelect label="ผู้สูงวัย" name="elderId" options={elderOptions} />
+                <FormField label="Vendor" name="vendor" required placeholder="เช่น Omron, Apple, Garmin" />
+                <FormField label="Device type" name="deviceType" required placeholder="blood_pressure, wearable, fall_sensor" />
+                <FormField label="External reference" name="externalReference" />
+                <FormTextarea label="Notes" name="notes" rows={4} />
+                <label className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <input type="checkbox" name="consentConfirmed" className="mt-1 h-4 w-4" />
+                  <span>ยืนยัน consent สำหรับ device data sharing</span>
+                </label>
+                <Button type="submit">ขอเชื่อม device</Button>
+              </FormAction>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
         <Card>
-          <CardHeader>
-            <CardTitle>Request device integration</CardTitle>
-            <CardDescription>Medical/fall device connections are consent-gated and do not create diagnosis.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FormAction action={requestDeviceIntegrationAction} className="space-y-4">
-              <FormSelect label="ผู้สูงวัย" name="elderId" options={elderOptions} />
-              <FormField label="Vendor" name="vendor" required placeholder="เช่น Omron, Apple, Garmin" />
-              <FormField label="Device type" name="deviceType" required placeholder="blood_pressure, wearable, fall_sensor" />
-              <FormField label="External reference" name="externalReference" />
-              <FormTextarea label="Notes" name="notes" rows={4} />
-              <label className="flex items-start gap-3 text-sm text-muted-foreground">
-                <input type="checkbox" name="consentConfirmed" className="mt-1 h-4 w-4" />
-                <span>ยืนยัน consent สำหรับ device data sharing</span>
-              </label>
-              <Button type="submit">ขอเชื่อม device</Button>
-            </FormAction>
+          <CardContent className="py-8 text-center text-muted-foreground">
+            เฉพาะ owner / family admin เท่านั้นที่สร้าง telecare หรือ device request ได้
           </CardContent>
         </Card>
-      </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ListCard
