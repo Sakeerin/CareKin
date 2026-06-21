@@ -39,7 +39,10 @@ export function AppShell({
               {[
                 ...navItems,
                 ...(userRole && pilotRoles.includes(userRole)
-                  ? [{ href: "/ops/pilot", label: "Pilot" }]
+                  ? [
+                      { href: "/ops/pilot", label: "Pilot" },
+                      { href: "/ops/production", label: "ProdOps" },
+                    ]
                   : []),
               ].map((item) => (
                 <Link
@@ -70,7 +73,10 @@ export function AppShell({
           {[
             ...navItems,
             ...(userRole && pilotRoles.includes(userRole)
-              ? [{ href: "/ops/pilot", label: "Pilot" }]
+              ? [
+                  { href: "/ops/pilot", label: "Pilot" },
+                  { href: "/ops/production", label: "ProdOps" },
+                ]
               : []),
           ].map((item) => (
             <Link

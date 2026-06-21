@@ -33,6 +33,7 @@ supabase/migrations/20260615000000_phase5_reports_ai_summary.sql
 supabase/migrations/20260616000000_phase6_pilot_launch.sql
 supabase/migrations/20260617000000_phase7_commercial_launch.sql
 supabase/migrations/20260618000000_phase8_scale_advanced_features.sql
+supabase/migrations/20260619000000_phase9_production_readiness.sql
 ```
 
 4. Run the dev server:
@@ -86,6 +87,8 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/wellness` | Insurance/provider wellness programs |
 | `/compliance` | Regulatory gate checklist and incident log |
 | `/ops/pilot` | Pilot operations dashboard for admins |
+| `/ops/production` | Production readiness dashboard for admins |
+| `/api/health` | Public health check for uptime monitoring |
 | `/members` | Invite & manage members |
 | `/settings` | Profile & workspace settings |
 | `/prototype` | Phase 1 UX prototype (mock data) |
@@ -230,3 +233,18 @@ Phase 8 adds the foundation for scale workflows while keeping clinical-adjacent 
 Clinical-adjacent features such as telecare, device integrations, fall detection, AI voice check-in, and clinic referrals require approval in `/scale` before related actions can be created.
 
 See `docs/phase8_scale_plan.md`, `docs/regulatory_boundary_memo.md`, `docs/clinical_safety_case.md`, and `docs/incident_response.md`.
+
+## Phase 9 — Production hardening and validation
+
+Phase 9 adds operational evidence tracking and deployment readiness checks before real production launch.
+
+### Phase 9 deliverables
+
+- Public `/api/health` endpoint for uptime monitoring
+- Production readiness checks for migrations, RLS, E2E, billing, monitoring, backup, security, performance, accessibility, and release gates
+- Operational drill records for backup restore, incident response, rollback, and security review
+- Release readiness review records with commit, migration, health-check, checklist, and rollback plan
+- Admin dashboard at `/ops/production`
+- Production runbooks in `docs/`
+
+See `docs/production_readiness_plan.md`, `docs/production_validation_checklist.md`, `docs/backup_restore_runbook.md`, and `docs/monitoring_runbook.md`.

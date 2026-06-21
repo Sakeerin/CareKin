@@ -1306,6 +1306,52 @@ Set `LAUNCH_INVITE_REQUIRED=true` in production when switching signup to invite-
 | model validation if AI involved | ✅ Gated | `ai_voice_checkin` stays blocked until approved |
 | incident reporting workflow | ✅ Implemented | `/compliance` + `docs/incident_response.md` |
 
+## Phase 9: Production hardening and validation
+
+ระยะเวลา: 2-4 สัปดาห์ก่อน production launch
+
+**Status:** ✅ Implemented (production readiness foundation)
+
+### Goals
+
+ทำให้ระบบพร้อมใช้งานจริง โดยมี monitoring, security validation, backup/restore, release evidence และ operational runbooks ก่อนรับลูกค้าจริง
+
+### Tasks
+
+| Task | Status | Notes |
+|---|---|---|
+| production health check | ✅ Implemented | `/api/health` returns required env status for uptime monitoring |
+| migration validation tracking | ✅ Implemented | `production_readiness_checks` category `migration` |
+| RLS/security regression tracking | ✅ Implemented | categories `rls` and `security` + docs checklist |
+| E2E core flow validation | ✅ Implemented foundation | category `e2e` stores evidence; automation can be added later |
+| billing provider readiness | ✅ Implemented foundation | category `billing` tracks provider/manual invoice evidence |
+| uptime/error monitoring | ✅ Implemented foundation | monitoring runbook + `/api/health` |
+| backup/restore drill | ✅ Implemented | `operational_drills` + backup restore runbook |
+| incident/rollback drill | ✅ Implemented | `operational_drills` + release rollback plan |
+| release approval workflow | ✅ Implemented | `release_readiness_reviews` + `/ops/production` |
+| production validation docs | ✅ Implemented | `docs/production_readiness_plan.md`, `docs/production_validation_checklist.md`, `docs/monitoring_runbook.md`, `docs/backup_restore_runbook.md` |
+
+### Deliverables
+
+| Deliverable | Status | Notes |
+|---|---|---|
+| health endpoint | ✅ Implemented | `/api/health` |
+| production ops dashboard | ✅ Implemented | `/ops/production` |
+| readiness evidence schema | ✅ Implemented | production checks, drills, release reviews |
+| monitoring and backup runbooks | ✅ Implemented | docs added |
+| release checklist | ✅ Implemented | release review form and production validation checklist |
+
+### Exit criteria
+
+| Criterion | Status |
+|---|---|
+| migrations applied and verified | ✅ Trackable in `/ops/production` |
+| RLS/security checks passed | ✅ Trackable in `/ops/production` |
+| core flows validated | ✅ Trackable in `/ops/production` |
+| uptime monitoring configured | ✅ `/api/health` + monitoring runbook |
+| backup/restore drill completed | ✅ Trackable as operational drill |
+| release rollback plan recorded | ✅ Release readiness review includes rollback plan |
+
 ---
 
 ## 15. Sprint Plan
